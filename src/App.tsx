@@ -1,7 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import LandingPage from "./components/LandingPage";
+import { Routes, Route } from "react-router-dom";
+import LandingPage from "./pages/landingpage/LandingPage";
+import ActOne from "./pages/ActOne";
+import ActTwo from "./pages/ActTwo";
+import ActThree from "./pages/ActThree";
+import ActFour from "./pages/ActFour";
+import Credits from "./pages/Credits";
+import Contact from "./pages/Contact";
 
 function App() {
   const [showMainPage, setShowMainPage] = useState(false);
@@ -202,10 +209,18 @@ function App() {
         <div className="transition-overlay-right"></div>
       </div>
       
-      {/* Landing page - revealed as curtains open */}
+      {/* App routes - revealed as curtains open */}
       {showMainPage && (
         <div ref={landingPageRef}>
-          <LandingPage />
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/act-one" element={<ActOne />} />
+            <Route path="/act-two" element={<ActTwo />} />
+            <Route path="/act-three" element={<ActThree />} />
+            <Route path="/act-four" element={<ActFour />} />
+            <Route path="/acknowledgements" element={<Credits />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
         </div>
       )}
     </>

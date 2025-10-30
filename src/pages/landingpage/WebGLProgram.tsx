@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
 import GUI from 'lil-gui';
-import Program from '../program';
-import { Size } from '../types/types';
+import Program from './program';
+import { Size } from '../../types/types';
 import gsap from 'gsap';
 
 interface WebGLProgramProps {
@@ -365,12 +365,12 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
 
   // Page data for the grid
   const pages = [
-    { title: 'Act One', image: '/512/p6.jpg', index: 0 },
-    { title: 'Act Two', image: '/512/p7.jpg', index: 1 },
-    { title: 'Act Three', image: '/512/p8.jpg', index: 2 },
-    { title: 'Act Four', image: '/512/p9.jpg', index: 3 },
-    { title: 'Acknowledgements', image: '/512/p10.jpg', index: 4 },
-    { title: 'Contact', image: '/512/p11.jpg', index: 5 },
+    { title: 'Act One', image: '/pages/p6.jpg', index: 0 },
+    { title: 'Act Two', image: '/pages/p7.jpg', index: 1 },
+    { title: 'Act Three', image: '/pages/p8.jpg', index: 2 },
+    { title: 'Act Four', image: '/pages/p9.jpg', index: 3 },
+    { title: 'Credits', image: '/pages/p10.jpg', index: 4 },
+    { title: 'Contact', image: '/pages/p11.jpg', index: 5 },
   ];
 
   return (

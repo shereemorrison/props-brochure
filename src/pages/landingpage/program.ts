@@ -4,7 +4,7 @@ import vertexShader from "./shaders/vertex.glsl"
 import fragmentShader from "./shaders/fragment.glsl"
 import gsap from "gsap"
 import normalizeWheel from "normalize-wheel"
-import { Size } from "./types/types"
+import { Size } from "../../types/types"
 
 interface Props {
   scene: THREE.Scene
@@ -180,19 +180,19 @@ export default class Program {
 
   async loadTextureAtlas() {
     const imagePaths = [
-      "/512/p1.jpg",
-      "/512/p2.jpg",
-      "/512/p3.jpg",
-      "/512/p4.jpg",
-      "/512/p5.jpg",
-      "/512/p6.jpg",
-      "/512/p7.jpg",
-      "/512/p8.jpg",
-      "/512/p9.jpg",
-      "/512/p10.jpg",
-      "/512/p11.jpg",
-      "/512/p12.jpg",
-      "/512/p13.jpg",
+      "/pages/p1.jpg",
+      "/pages/p2.jpg",
+      "/pages/p3.jpg",
+      "/pages/p4.jpg",
+      "/pages/p5.jpg",
+      "/pages/p6.jpg",
+      "/pages/p7.jpg",
+      "/pages/p8.jpg",
+      "/pages/p9.jpg",
+      "/pages/p10.jpg",
+      "/pages/p11.jpg",
+      "/pages/p12.jpg",
+      "/pages/p13.jpg",
     ]
 
     const menuPages = [
