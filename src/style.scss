@@ -1,0 +1,542 @@
+// Global styles
+body {
+  font-family: "Bungee", "Playfair Display", serif;
+  background: rgb(19, 19, 19);
+  line-height: 1.15;
+}
+
+* {
+  scrollbar-color: transparent transparent;
+  scrollbar-width: none;
+}
+
+#webgl {
+  position: fixed;
+  inset: 0;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  height: 100dvh;
+  background: rgb(19, 19, 19);
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#app {
+  min-height: 100dvh;
+  z-index: 10;
+  position: relative;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+#app.loaded {
+  opacity: 1;
+}
+
+[data-page] {
+  --turn-page: 0;
+  --data-page-index: 0;
+  --delta-index: calc(
+    (var(--data-current-page-index) - var(--data-page-index))
+  );
+  transform: rotate(calc(-180deg * var(--turn-page)))
+    translateY(calc(-4px * (var(--delta-index) * 2 - 1) * var(--turn-page)));
+}
+
+// Variables
+:root {
+  --black: #000;
+}
+
+// Component styles
+.contain {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+}
+
+.wrapper {
+  background-color: #000;
+  height: 100vh;
+  width: 100vw;
+  color: black;
+  position: fixed;
+  opacity: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  overflow: hidden;
+  .header {
+    max-width: min(1400px, 95vw);
+    margin: 0 auto;
+    padding: clamp(0.5rem, 2vw, 0.625rem) 0;
+    .reveal {
+      display: flex;
+        font-size: clamp(1.5rem, 5vw, 3.5rem);
+      max-width: min(50rem, 95vw);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 1;
+    }
+    .menu {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 1;
+      transform: translateY(0);
+      .logo {
+        font-size: clamp(1.25rem, 4vw, 2.25em);
+        text-decoration: none;
+      }
+      ul {
+        display: flex;
+        justify-content: space-around;
+        gap: clamp(0.5rem, 2vw, 0.625rem);
+        li {
+          list-style: none;
+        }
+      }
+    }
+  }
+}
+
+.loadings {
+  background-color: var(--black);
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  color: white;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 1;
+  z-index: 20;
+  .word-loader {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    .word-progress {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: clamp(1rem, 3vw, 1.875rem);
+      z-index: 2;
+      
+      .word-container {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.25rem, 1vw, 0.3125rem);
+        
+        .letter {
+          font-size: clamp(2rem, 5vw, 3rem);
+          font-weight: 700;
+          color: white;
+          text-transform: uppercase;
+          position: relative;
+          z-index: 3;
+          transition: all 0.3s ease;
+          opacity: 1;
+        }
+      }
+    }
+    
+    .progress-fill {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: clamp(40px, 8vh, 60px);
+      background: linear-gradient(90deg, #ffd700 0%, #ffed4e 100%);
+      width: 0;
+      z-index: 1;
+      border-radius: clamp(20px, 4vh, 30px);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+  }
+}
+
+.counter {
+  position: fixed;
+  bottom: clamp(1rem, 3vh, 2rem);
+  left: clamp(0.5rem, 2vw, 1%);
+  color: white;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  
+  .counter-word {
+    font-size: clamp(2.5em, 8vw, 5em);
+    -webkit-text-stroke: clamp(1px, 0.2vw, 2px) white;
+    font-weight: 700;
+    text-transform: uppercase;
+    position: absolute;
+    white-space: nowrap;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+// Theatrical curtain transition overlay
+.transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 15;
+  display: none;
+  pointer-events: none;
+  
+  &-left,
+  &-right {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: #000;
+    will-change: transform;
+  }
+  
+  &-left {
+    left: 0;
+    transform-origin: left center;
+  }
+  
+  &-right {
+    right: 0;
+    transform-origin: right center;
+  }
+}
+
+.btn {
+  padding: clamp(0.5rem, 2vw, 0.625rem) clamp(1rem, 3vw, 1.25rem);
+  border-radius: clamp(15px, 3vw, 20px);
+  border: none;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: black;
+  &_active {
+    font-weight: 700;
+    background-color: #2b2e3a;
+    color: white;
+  }
+}
+
+// Landing Page Styles
+.landing-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 20;
+  padding: clamp(1rem, 3vw, 2rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
+  box-sizing: border-box;
+  gap: clamp(0.5rem, 2vw, 1rem);
+  
+  .header-title {
+    font-size: clamp(1.25rem, 4vw, 2rem);
+    color: #ffffff;
+    font-family: "Bungee", "Playfair Display", serif;
+    font-weight: bold;
+    pointer-events: auto;
+    letter-spacing: clamp(0.05em, 0.1vw, 0.1em);
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 100%;
+    word-break: break-word;
+  }
+  
+  .header-links {
+    display: flex;
+    gap: clamp(0.25rem, 1vw, 0.5rem);
+    font-size: clamp(0.75rem, 2vw, 1.2rem);
+    color: #ffffff;
+    font-family: "Bungee", "Playfair Display", serif;
+    font-weight: bold;
+    pointer-events: auto;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 0;
+    max-width: min(30%, 200px);
+    position: relative;
+    z-index: 25;
+    
+    a {
+      color: #ffffff;
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+      display: block;
+      touch-action: manipulation;
+      position: relative;
+      z-index: 25;
+      
+      &:hover {
+        opacity: 0.7;
+      }
+      
+      &:active {
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+.landing-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 20;
+  padding: clamp(1rem, 3vw, 2rem);
+  font-size: clamp(0.75rem, 2vw, 1.2rem);
+  color: #ffffff;
+  font-family: "Bungee", "Playfair Display", serif;
+  font-weight: bold;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+// Detail Page Styles
+.detail-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+  z-index: 30;
+  padding: clamp(1rem, 3vw, 2rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  
+  .back-button {
+    position: absolute;
+    top: clamp(1rem, 3vw, 2rem);
+    left: clamp(1rem, 3vw, 2rem);
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #000000;
+    border: none;
+    padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem);
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    font-family: "Bungee", "Playfair Display", serif;
+    cursor: pointer;
+    border-radius: clamp(6px, 1vw, 8px);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: transform 0.2s ease;
+    z-index: 35 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    &:focus {
+      outline: 2px solid rgba(255, 215, 0, 0.5);
+      outline-offset: 2px;
+    }
+  }
+  
+  .detail-content {
+    max-width: min(800px, 95vw);
+    margin: 0 auto;
+    padding-top: clamp(3rem, 8vh, 4rem);
+    padding-bottom: clamp(1.5rem, 4vh, 2rem);
+    min-height: calc(100vh - clamp(4rem, 12vh, 8rem));
+    
+    h1 {
+      color: #ffd700;
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-family: "Bungee", "Playfair Display", serif;
+      margin-bottom: clamp(0.75rem, 2vh, 1rem);
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      font-weight: 700;
+    }
+    
+    .detail-subtitle {
+      color: #ffffff;
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      font-family: "Bungee", "Playfair Display", serif;
+      margin-bottom: clamp(1.5rem, 4vh, 2rem);
+      font-weight: 600;
+      opacity: 0.9;
+    }
+    
+    p {
+      color: #ffffff;
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-family: "Bungee", "Playfair Display", serif;
+      line-height: 1.6;
+      margin-bottom: clamp(2rem, 5vh, 3rem);
+      opacity: 0.8;
+    }
+    
+    h2 {
+      color: #ffd700;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-family: "Bungee", "Playfair Display", serif;
+      margin-bottom: clamp(0.75rem, 2vh, 1rem);
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+      font-weight: 600;
+    }
+    
+    .cast-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, clamp(200px, 30vw, 250px)), 1fr));
+      gap: clamp(0.75rem, 2vw, 1rem);
+    }
+    
+    .awards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, clamp(250px, 35vw, 300px)), 1fr));
+      gap: clamp(0.75rem, 2vw, 1rem);
+    }
+  }
+}
+
+
+
+// Mobile pages grid animation
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive overlay container - switches to grid on smaller screens
+.overlay-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  // On smaller screens, position relative so it scrolls with canvas
+  @media (max-width: 1024px) {
+    position: relative !important;
+    display: block !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    pointer-events: auto !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  .page-overlay {
+    pointer-events: none;
+    touch-action: manipulation;
+    z-index: 3;
+    
+    // On grid layout, overlays are positioned absolutely in JavaScript
+    @media (max-width: 1024px) {
+      position: absolute !important;
+      pointer-events: auto !important;
+      cursor: pointer !important;
+      // Styles are set inline in JavaScript to match 3D positions
+    }
+  }
+}
+
+// Responsive images
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+// Media queries for additional responsive adjustments
+@media (max-width: 1024px) {
+  .overlay-container {
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .landing-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(0.5rem, 2vh, 1rem);
+    
+    .header-links {
+      flex-direction: row;
+      align-items: center;
+      max-width: 100%;
+      
+      a {
+        position: relative;
+        z-index: 25;
+        touch-action: manipulation;
+      }
+    }
+  }
+  
+  .detail-page {
+    .detail-content {
+      padding-top: clamp(4rem, 10vh, 5rem);
+      
+      .cast-grid,
+      .awards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .counter {
+    .counter-word {
+      font-size: clamp(1.5em, 10vw, 3em);
+    }
+  }
+  
+  .landing-header {
+    .header-title {
+      font-size: clamp(1rem, 5vw, 1.5rem);
+    }
+    
+    .header-links {
+      font-size: clamp(0.65rem, 3vw, 1rem);
+    }
+  }
+}
