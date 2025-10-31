@@ -27,7 +27,9 @@ async function discoverImages(stageFolder: string, maxAttempts: number = 400): P
   
   // Try loading images sequentially, stopping early if we hit consecutive failures
   for (let i = 1; i <= maxAttempts; i++) {
-    const imagePath = `/${stageFolder}/${stageFolder}${i}.webp`;
+    // Use import.meta.env.BASE_URL for proper path resolution in production
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    const imagePath = `${baseUrl}${stageFolder}/${stageFolder}${i}.webp`.replace(/\/+/g, '/');
     
     const result = await new Promise<string | null>((resolve) => {
       // Use fetch HEAD request instead of Image for faster checking
