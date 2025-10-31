@@ -20,37 +20,28 @@ function getStageFolder(stageId: string): string {
 async function discoverImages(stageFolder: string, maxAttempts: number = 400): Promise<string[]> {
   const images: string[] = [];
   let consecutiveFailures = 0;
-  const maxConsecutiveFailures = 15; // Stop after 15 consecutive failures (more lenient for gaps)
-  let foundAny = false; // Track if we've found at least one image
+  const maxConsecutiveFailures = 15;
+  let foundAny = false;
   
-  // Use absolute path - works better in production
-  const baseUrl = window.location.origin;
-  console.log(`[discoverImages] Starting discovery for ${stageFolder}, baseUrl: ${baseUrl}`);
-  
-  // Try loading images sequentially, stopping early if we hit consecutive failures
+  // Try loading images sequentially
   for (let i = 1; i <= maxAttempts; i++) {
-    // Use absolute path starting with / (works in both dev and production)
     const imagePath = `/${stageFolder}/${stageFolder}${i}.webp`;
     
     const result = await new Promise<string | null>((resolve) => {
       let resolved = false;
-      
-      // Use Image() constructor - more reliable than fetch on mobile
       const img = new Image();
       
-      // Set timeout
       const timeoutId = setTimeout(() => {
         if (!resolved) {
           resolved = true;
           resolve(null);
         }
-      }, 2000); // 2 second timeout
+      }, 1500);
       
       img.onload = () => {
         if (!resolved) {
           resolved = true;
           clearTimeout(timeoutId);
-          console.log(`[discoverImages] ✓ Found: ${imagePath}`);
           resolve(imagePath);
         }
       };
@@ -63,36 +54,21 @@ async function discoverImages(stageFolder: string, maxAttempts: number = 400): P
         }
       };
       
-      // Start loading
       img.src = imagePath;
     });
     
     if (result) {
       images.push(result);
-      consecutiveFailures = 0; // Reset counter on success
+      consecutiveFailures = 0;
       foundAny = true;
-      if (images.length <= 5) {
-        console.log(`[discoverImages] Found image ${images.length}: ${result}`);
-      }
     } else {
       consecutiveFailures++;
-      if (consecutiveFailures === 1 && !foundAny) {
-        // Log first few failures to help debug
-        console.log(`[discoverImages] Testing ${imagePath}... not found`);
-      }
-      // Only stop if we've found images before and hit too many consecutive failures
-      // This allows skipping gaps at the beginning
       if (foundAny && consecutiveFailures >= maxConsecutiveFailures) {
-        console.log(`[discoverImages] Stopping after ${consecutiveFailures} consecutive failures. Found ${images.length} images total.`);
         break;
       }
     }
   }
   
-  console.log(`[discoverImages] Discovery complete. Found ${images.length} images.`);
-  if (images.length === 0) {
-    console.error(`[discoverImages] No images found for ${stageFolder}! Check if files exist in public/${stageFolder}/`);
-  }
   return images;
 }
 
@@ -138,24 +114,12 @@ export default function StagePage() {
   
   useEffect(() => {
     setImagesLoading(true);
-    console.log(`[StagePage] Discovering images for folder: ${stageFolder}`);
-    console.log(`[StagePage] Current URL: ${window.location.href}`);
-    console.log(`[StagePage] Base URL: ${window.location.origin}`);
-    
     discoverImages(stageFolder, 400).then((discoveredImages) => {
-      console.log(`[StagePage] Found ${discoveredImages.length} images for ${stageFolder}`);
-      console.log(`[StagePage] Image paths:`, discoveredImages.slice(0, 3));
-      // Limit to first 8 images
       const limitedImages = discoveredImages.slice(0, 8);
       setImagePaths(limitedImages);
       setImagesLoading(false);
-      if (limitedImages.length === 0) {
-        console.warn(`[StagePage] No images found for ${stageFolder}`);
-        console.warn(`[StagePage] Check browser Network tab for failed requests`);
-      }
     }).catch((error) => {
-      console.error(`[StagePage] Error discovering images:`, error);
-      console.error(`[StagePage] Error details:`, error.message, error.stack);
+      console.error('Error loading images:', error);
       setImagesLoading(false);
       setImagePaths([]);
     });
@@ -304,6 +268,7 @@ export default function StagePage() {
   return (
     <div className="detail-page act-one-story">
       <div className="story-background-image" ref={backgroundRef} style={{ backgroundImage: `url(${new URL('../assets/propstheatrelogo.webp', import.meta.url).toString()})` }} />
+      
       <button className="back-button" onClick={() => navigate(parentDayId ? `/day/${parentDayId}` : '/')}>← Back</button>
       <div className="detail-content" ref={storyContainerRef}>
         <h1 ref={titleRef}>{stageData.title}</h1>
@@ -344,12 +309,8 @@ export default function StagePage() {
                     alt={`${stageData.title} - Image ${index + 1}`}
                     loading="lazy"
                     onError={(e) => {
-                      console.error(`[StagePage] Failed to load image: ${imagePath}`);
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
-                    }}
-                    onLoad={() => {
-                      console.log(`[StagePage] Successfully loaded: ${imagePath}`);
                     }}
                     style={{
                       width: '100%',
