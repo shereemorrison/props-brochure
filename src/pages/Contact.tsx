@@ -5,7 +5,7 @@ export default function Contact() {
   const navigate = useNavigate();
   return (
     <div className="detail-page">
-      <button className="back-button" onClick={() => navigate(-1)}>← Back</button>
+      <button className="back-button" onClick={() => navigate('/')}>← Back</button>
       <div className="detail-content">
         <h1>Contact</h1>
         <p>Please reach out via Instagram or our website.</p>

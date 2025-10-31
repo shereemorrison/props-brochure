@@ -96,16 +96,25 @@ export default class Program {
 
       if (shouldSkipAnimation) {
         this.material.uniforms.uProgress.value = 0.4
-        this.material.uniforms.uSplitProgress.value = 1.0
+ 
         console.log('Skipped animation - went directly to final state')
         console.log('Uniforms:', {
           uProgress: this.material.uniforms.uProgress.value,
-          uSplitProgress: this.material.uniforms.uSplitProgress.value
+         
         })
       } else {
+        // ========================================
+        // TIMELINE: ROTATION → FADE OUT → MENU
+        // ========================================
+        // EDIT THIS SECTION TO MODIFY THE ANIMATION TIMELINE
+        // ========================================
+        
         anim = gsap.timeline()
         this.animationTimeline = anim
 
+        // STEP 1: ROTATION (uProgress 0 → 1)
+        // Duration: 6.5 seconds
+        // This animates the page flipping rotation
         anim.fromTo(
           this.material.uniforms.uProgress,
           { value: 0 },
@@ -113,18 +122,15 @@ export default class Program {
             value: 1,
             duration: 6.5,
             ease: "power3.inOut",
+            onComplete: () => {
+              // Rotation complete - WebGLProgram.tsx detects uProgress >= 1.0
+              // and triggers fade out → menu transition
+            }
           }
         )
-        anim.fromTo(
-          this.material.uniforms.uSplitProgress,
-          { value: 0 },
-          {
-            value: 1,
-            duration: 4.0,
-            ease: "power3.out",
-          },
-          ">" // start split only after rotation fully completes
-        )
+        // ========================================
+        // END TIMELINE EDIT SECTION
+        // ========================================
       }
 
       if (anim) {
@@ -138,19 +144,21 @@ export default class Program {
 
   createMenuPage(title: string): HTMLImageElement {
     // Create a canvas to draw the menu page
+    // Aspect ratio matches page dimensions: width 2, height 3 (portrait, like A4)
+    // Using 512px width gives us 768px height for 2:3 ratio
     const canvas = document.createElement('canvas')
     canvas.width = 512
-    canvas.height = 512
+    canvas.height = 768  // 512 * (3/2) = 768 for 2:3 aspect ratio
     const ctx = canvas.getContext('2d')!
 
     // Set background
     ctx.fillStyle = '#1a1a1a'
-    ctx.fillRect(0, 0, 512, 512)
+    ctx.fillRect(0, 0, 512, 768)
 
     // Add border
     ctx.strokeStyle = '#ffffff'
     ctx.lineWidth = 4
-    ctx.strokeRect(2, 2, 508, 508)
+    ctx.strokeRect(2, 2, 508, 764)
 
     // // Add title - use Bungee font (bold, theatrical)
     // ctx.fillStyle = '#ffffff'
@@ -162,14 +170,15 @@ export default class Program {
     // Add subtitle
     ctx.font = '20px Bungee'
     ctx.fillStyle = '#cccccc'
-    ctx.fillText('Props Theatre', 256, 300)
+    ctx.textAlign = 'center'
+    ctx.fillText('Props Theatre', 256, 400)
 
     // Add decorative elements
     ctx.strokeStyle = '#ffffff'
     ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.moveTo(100, 350)
-    ctx.lineTo(412, 350)
+    ctx.moveTo(100, 500)
+    ctx.lineTo(412, 500)
     ctx.stroke()
 
     // Convert canvas to image
@@ -319,15 +328,8 @@ export default class Program {
     const touch = event.touches[0]
     const deltaX = this.touch.lastX - touch.clientX
 
-    // Prevent scrolling after split is complete
-    const isSplitComplete = this.material.uniforms.uSplitProgress.value >= 1.0
-
-    if (!isSplitComplete) {
-      // In scroll mode, use vertical scrolling
-      const scrollY = ((deltaX * this.sizes.height) / window.innerHeight) * 2
-      this.scrollY.target += scrollY
-      this.material.uniforms.uSpeedY.value += scrollY
-    }
+    
+    
 
     this.touch.lastX = touch.clientX
   }
@@ -359,6 +361,25 @@ export default class Program {
     const aTextureCoords = new Float32Array(this.meshCount * 4)
     const aIndex = new Float32Array(this.meshCount)
 
+    // ========================================
+    // TEXTURE ASSIGNMENT TO INSTANCES
+    // ========================================
+    // Instance 0 → imageInfos[0] (first menu page: "Opening Night")
+    // Instance 1 → imageInfos[1] (second menu page: "Matinée Special")
+    // Instance 2 → imageInfos[2] (third menu page: "Evening Gala")
+    // Instance 3 → imageInfos[3] (fourth menu page: "Closing Night")
+    // Instance 4 → imageInfos[4] (fifth menu page: "Student Showcase")
+    // Instance 5 → imageInfos[5] (sixth menu page: "Behind the Scenes")
+    // Instance 6 → imageInfos[6] (p1)
+    // Instance 7 → imageInfos[7] (p2)
+    // ...
+    // Instance 15 → imageInfos[15] (p10) ← THIS IS WHAT YOU'RE SEEING
+    // Instance 16 → imageInfos[16] (p11)
+    // Instance 17 → imageInfos[17] (p12)
+    // Instance 18 → imageInfos[18] (p13)
+    // Instance 19 → imageInfos[0] (wraps back to first menu page)
+    // ========================================
+    
     for (let i = 0; i < this.meshCount; i++) {
       const imageIndex = i % this.imageInfos.length
 
@@ -369,6 +390,17 @@ export default class Program {
 
       aIndex[i] = i
     }
+    
+    // ========================================
+    // DEBUG: Log which texture instance 0 is using
+    // ========================================
+    console.log('[TEXTURE ASSIGNMENT] Instance 0 uses imageInfos[0]:', {
+      imageIndex: 0,
+      imagePath: 'First menu page ("Opening Night")',
+      totalImages: this.imageInfos.length,
+      instance15ImageIndex: 15 % this.imageInfos.length,
+      instance15ImagePath: 'p10 (if instance 15 becomes visible)'
+    })
 
     this.instancedMesh.geometry.setAttribute(
       "aTextureCoords",

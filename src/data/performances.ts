@@ -1,3 +1,158 @@
+export interface Stage {
+  id: string;
+  stageNumber: string; // "Stage One", "Stage Two", "Stage Three"
+  title: string;
+  summary: string;
+  cast: Array<{ name: string; role: string }>;
+  awards: Array<{ icon: string; name: string; recipient: string }>;
+  images?: string[]; // Array of image paths
+}
+
+export interface Day {
+  id: string;
+  day: string; // "Monday 24th", "Tuesday 25th", etc.
+  year: number; // 2026
+  stages: Stage[];
+  hasThankYou?: boolean; // For Thursday which has Thank You section
+}
+
+export const days: Day[] = [
+  {
+    id: 'monday-24th',
+    day: 'Monday 24th',
+    year: 2026,
+    stages: [
+      {
+        id: 'stage-one-monday',
+        stageNumber: 'Stage One',
+        title: 'FIVE MINUTES',
+        summary: 'Summary of FIVE MINUTES play will go here',
+        cast: [],
+        awards: []
+      },
+      {
+        id: 'stage-two-monday',
+        stageNumber: 'Stage Two',
+        title: 'THE BAD SIDE',
+        summary: 'Summary of THE BAD SIDE play will go here',
+        cast: [],
+        awards: []
+      },
+      {
+        id: 'stage-three-monday',
+        stageNumber: 'Stage Three',
+        title: 'FERRIER\'S SHOES',
+        summary: 'Summary of FERRIER\'S SHOES play will go here',
+        cast: [],
+        awards: []
+      }
+    ]
+  },
+  {
+    id: 'tuesday-25th',
+    day: 'Tuesday 25th',
+    year: 2026,
+    stages: [
+      {
+        id: 'stage-one-tuesday',
+        stageNumber: 'Stage One',
+        title: 'FIVE MINUTES',
+        summary: 'Summary of FIVE MINUTES play will go here',
+        cast: [],
+        awards: []
+      },
+      {
+        id: 'stage-two-tuesday',
+        stageNumber: 'Stage Two',
+        title: 'THE BAD SIDE',
+        summary: 'Summary of THE BAD SIDE play will go here',
+        cast: [],
+        awards: []
+      },
+      {
+        id: 'stage-three-tuesday',
+        stageNumber: 'Stage Three',
+        title: 'FERRIER\'S SHOES',
+        summary: 'Summary of FERRIER\'S SHOES play will go here',
+        cast: [],
+        awards: []
+      }
+    ]
+  },
+  {
+    id: 'wednesday-26th',
+    day: 'Wednesday 26th',
+    year: 2026,
+    stages: [
+      {
+        id: 'stage-one-wednesday',
+        stageNumber: 'Stage One',
+        title: 'FIVE MINUTES',
+        summary: 'Summary of FIVE MINUTES play will go here',
+        cast: [],
+        awards: []
+      },
+      {
+        id: 'stage-two-wednesday',
+        stageNumber: 'Stage Two',
+        title: 'THE BAD SIDE',
+        summary: 'Summary of THE BAD SIDE play will go here',
+        cast: [],
+        awards: []
+      },
+      {
+        id: 'stage-three-wednesday',
+        stageNumber: 'Stage Three',
+        title: 'FERRIER\'S SHOES',
+        summary: 'Summary of FERRIER\'S SHOES play will go here',
+        cast: [],
+        awards: []
+      }
+    ]
+  },
+  {
+    id: 'thursday-27th',
+    day: 'Thursday 27th',
+    year: 2026,
+    hasThankYou: true,
+    stages: [
+      {
+        id: 'stage-one-thursday',
+        stageNumber: 'Stage One',
+        title: 'FIVE MINUTES',
+        summary: 'Summary of FIVE MINUTES play will go here',
+        cast: [],
+        awards: []
+      },
+      {
+        id: 'stage-two-thursday-our-space',
+        stageNumber: 'Stage Two',
+        title: 'OUR SPACE',
+        summary: 'Summary of OUR SPACE play will go here',
+        cast: [],
+        awards: []
+      },
+      {
+        id: 'stage-two-thursday-bad-side',
+        stageNumber: 'Stage Two',
+        title: 'THE BAD SIDE',
+        summary: 'Summary of THE BAD SIDE play will go here',
+        cast: [],
+        awards: []
+      },
+      {
+        id: 'stage-two-thursday-pirated',
+        stageNumber: 'Stage Two',
+        title: 'PIRATED',
+        summary: 'Summary of PIRATED play will go here',
+        cast: [],
+        awards: []
+      }
+    ]
+  }
+];
+
+// Legacy interface for backwards compatibility
 export interface Performance {
   id: string;
   day: string;
@@ -8,6 +163,7 @@ export interface Performance {
   awards: Array<{ icon: string; name: string; recipient: string }>;
 }
 
+// Legacy performances array (kept for existing pages)
 export const performances: Performance[] = [
   {
     id: 'act1',
@@ -64,4 +220,3 @@ export const performances: Performance[] = [
     awards: []
   }
 ];
-

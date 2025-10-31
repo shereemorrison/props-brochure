@@ -1,0 +1,30 @@
+.masonry-list {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.masonry-item-wrapper {
+  position: absolute;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  box-sizing: border-box;
+}
+
+.masonry-item-img {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: block;
+}
+
+.masonry-item-wrapper:hover .masonry-item-img {
+  box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
+}
+

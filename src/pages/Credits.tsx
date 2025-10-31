@@ -8,7 +8,7 @@ export default function Credits() {
   if (!perf) return null;
   return (
     <div className="detail-page">
-      <button className="back-button" onClick={() => navigate(-1)}>← Back</button>
+      <button className="back-button" onClick={() => navigate('/')}>← Back</button>
       <div className="detail-content">
         <h1>{perf.title}</h1>
         <p>{perf.blurb}</p>

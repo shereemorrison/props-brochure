@@ -66,10 +66,10 @@ void main()
     // Apply rotation around the new origin
 
     // ========================================
-    // TIMELINE - SEPARATE PHASES:
+    // TIMELINE - ROTATION ONLY:
     // ========================================
     // PHASE 1: Page Flipping (uProgress 0.0 → 1.0)
-    // PHASE 2: Split & Flatten (uSplitProgress 0.0 → 1.0)
+    // No split phase - rotation completes and transitions directly to grid
     // ========================================
 
     // ========================================
@@ -111,9 +111,8 @@ void main()
     float maxRotation = 2.0 * PI; // One full rotation
     yAngle = mod(yAngle + maxRotation, 2.0 * PI) - maxRotation;
     
-    // During split phase, gradually reduce rotation to 0 (flatten to face-on)
-    float rotationPhase = 1.0 - uSplitProgress;
-    yAngle *= rotationPhase;
+    // No split phase - rotation stays as calculated
+    yAngle *= 1.0;
 
     // Smoothly zero rotation to face-on near the end to match initial pose
     float endPoseGate = 1.0 - smoothstep(0.9, 1.0, uProgress);
@@ -132,31 +131,8 @@ void main()
     translatedPosition.z += stackingPages * endPoseGate; // fade out near end to match initial pose
 
     // ========================================
-    // SPLIT EFFECTS - PHASE 2 (uSplitProgress only):
+    // Z SCROLL LOGIC (always active):
     // ========================================
-    
-    // Remove crumple and stacking during split (if any remains)
-    translatedPosition.z += pageCrumple * (-uSplitProgress);
-    translatedPosition.z += stackingPages * (-uSplitProgress);
-    
-    // Gate split start by how face-on we are to avoid pre-split snap
-    // faceOnGate ~ 0 when angled, ~1 when nearly face-on
-    float faceOnGate = 1.0 - smoothstep(0.05, 0.2, abs(yAngle));
-    float splitAmount = uSplitProgress * faceOnGate;
-
-    // Straight horizontal split (face-on) for a clean line
-    float horizontalSpacing = 2.5; // spacing between final pages
-    float horizontalOffset = (aIndex - (uMeshCount-1.)*0.5) * horizontalSpacing;
-    float manualOffset = 1.0;
-    translatedPosition.x += splitAmount * (horizontalOffset + manualOffset);
-    
-    // Force pages onto the same Z plane during split for a straight line
-    float targetZ = 0.0;
-    translatedPosition.z = mix(translatedPosition.z, targetZ, splitAmount);
-    
-    // Z Scroll logic (disabled during split)
-    // Disable Z scroll offsets during split (keep line straight)
-    float isSplit = step(0.0, uSplitProgress);
     
     float boxCenterZ = uPageSpacing*( - (aIndex - (uMeshCount-1.)*0.5));        
     
@@ -167,18 +143,18 @@ void main()
     
     float zOffset = wrappedCenterZ - boxCenterZ;
     
-    translatedPosition.z += zOffset * (1.0 - isSplit);
+    translatedPosition.z += zOffset;
     
     vec3 rotatedPosition = getYrotationMatrix(yAngle) * translatedPosition;        
 
-    // X rotation should also respect the split progress
+    // X rotation
     float initialRotationProgress = remap(uProgress,0.,0.15);
 
     // Translate back to original coordinate system
     rotatedPosition += rotationCenter;
     // Ensure the early X offset is zero at both the very start and at the end of rotation
     // so the final pose matches the initial face-on pose
-    float endGate = endPoseGate * (1.0 - uSplitProgress);
+    float endGate = endPoseGate;
     rotatedPosition.x += initialRotationProgress * uPageWidth * 0.5 * endGate;
         
     float xAngle = -PI*0.2*initialRotationProgress;

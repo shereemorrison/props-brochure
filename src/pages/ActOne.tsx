@@ -1,37 +1,169 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { performances } from '../data/performances';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 export default function ActOne() {
   const navigate = useNavigate();
   const perf = performances.find(p => p.id === 'act1');
+  const blurbRef = useRef<HTMLParagraphElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLDivElement>(null);
+  const storyContainerRef = useRef<HTMLDivElement>(null);
+  const backgroundRef = useRef<HTMLDivElement>(null);
+  const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  
   if (!perf) return null;
+
+  // Split the blurb into words
+  const words = perf.blurb.split(' ');
+
+  useGSAP(() => {
+    // Wait for all refs to be ready
+    if (!blurbRef.current || !titleRef.current || !subtitleRef.current || !backgroundRef.current || !storyContainerRef.current) {
+      return;
+    }
+
+    const wordElements = blurbRef.current.querySelectorAll('.word');
+    if (wordElements.length === 0) return;
+
+    // Refresh ScrollTrigger to recalculate
+    ScrollTrigger.refresh();
+
+    // Set initial state for background
+    gsap.set(backgroundRef.current, {
+      scale: 1,
+      opacity: 0.2
+    });
+
+    // Animate background image with ScrollTrigger - use pin and scroll
+    ScrollTrigger.create({
+      trigger: storyContainerRef.current,
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 1,
+      onUpdate: (self) => {
+        const progress = self.progress;
+        gsap.set(backgroundRef.current, {
+          scale: 1 + (progress * 0.3), // Scale from 1 to 1.3
+          opacity: 0.2 + (progress * 0.2) // Opacity from 0.2 to 0.4
+        });
+      }
+    });
+
+    // Title and subtitle - animate immediately
+    gsap.fromTo([titleRef.current, subtitleRef.current], 
+      {
+        opacity: 0,
+        y: 30
+      },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: 'power2.out'
+      }
+    );
+
+    // Set initial state for words - hidden initially for animation
+    gsap.set(wordElements, {
+      opacity: 0,
+      y: 20
+    });
+
+    // Words - animate on scroll with split text effect
+    ScrollTrigger.create({
+      trigger: blurbRef.current,
+      start: 'top 80%',
+      toggleActions: 'play none none none',
+      onEnter: () => {
+        gsap.to(wordElements, {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.03,
+          ease: 'power2.out'
+        });
+      }
+    });
+
+    // Story sections - animate as they come into view
+    sectionRefs.current.forEach((section) => {
+      if (!section) return;
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top 75%',
+        toggleActions: 'play none none none',
+        onEnter: () => {
+          gsap.to(section, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1,
+            ease: 'power2.out'
+          });
+        }
+      });
+
+      // Set initial state
+      gsap.set(section, {
+        opacity: 0,
+        y: 50,
+        scale: 0.95
+      });
+    });
+
+    // Cleanup
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => {
+        if (trigger.vars.trigger === storyContainerRef.current || 
+            trigger.vars.trigger === blurbRef.current ||
+            sectionRefs.current.includes(trigger.vars.trigger as HTMLDivElement)) {
+          trigger.kill();
+        }
+      });
+    };
+  }, { scope: storyContainerRef, dependencies: [perf] });
+
   return (
-    <div className="detail-page">
-      <button className="back-button" onClick={() => navigate(-1)}>← Back</button>
-      <div className="detail-content">
-        <h1>{perf.title}</h1>
-        <div className="detail-subtitle">{perf.day} • {perf.time}</div>
-        <p>{perf.blurb}</p>
-        <div style={{ marginBottom: 'clamp(2rem, 5vh, 3rem)' }}>
+    <div className="detail-page act-one-story">
+      <div className="story-background-image" ref={backgroundRef} style={{ backgroundImage: `url(${new URL('../assets/propstheatrelogo.webp', import.meta.url).toString()})` }} />
+      <button className="back-button" onClick={() => navigate('/')}>← Back</button>
+      <div className="detail-content" ref={storyContainerRef}>
+        <h1 ref={titleRef}>{perf.title}</h1>
+        <div className="detail-subtitle" ref={subtitleRef}>{perf.day}</div>
+        
+        <section className="story-section" ref={el => { sectionRefs.current[0] = el as HTMLDivElement }}>
+          <p ref={blurbRef} className="story-blurb">
+            {words.map((word, index) => (
+              <span key={index} className="word" style={{ display: 'inline-block', marginRight: index < words.length - 1 ? '0.25em' : '0' }}>
+                {word}
+              </span>
+            ))}
+          </p>
+        </section>
+
+        <section className="story-section cast-section" ref={el => { sectionRefs.current[1] = el as HTMLDivElement }}>
           <h2>Cast & Crew</h2>
           <div className="cast-grid">
             {perf.cast.map((member, i) => (
-              <div key={i} style={{
-                background: 'rgba(255, 215, 0, 0.1)',
-                backdropFilter: 'blur(10px)',
-                padding: 'clamp(0.75rem, 2vw, 1rem)',
-                borderRadius: 'clamp(8px, 1.5vw, 10px)',
-                border: '1px solid rgba(255, 215, 0, 0.3)',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-              }}>
+              <div key={i} className="cast-member-card">
                 <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.name}</div>
                 <div style={{ color: '#ffffff', opacity: 0.8, fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.role}</div>
               </div>
             ))}
           </div>
-        </div>
-        <div>
+        </section>
+
+        {perf.awards.length > 0 && (
+          <section className="story-section" ref={el => { sectionRefs.current[2] = el as HTMLDivElement }}>
           <h2>Awards & Recognition</h2>
           <div className="awards-grid">
             {perf.awards.map((award, i) => (
@@ -50,7 +182,8 @@ export default function ActOne() {
               </div>
             ))}
           </div>
-        </div>
+          </section>
+        )}
       </div>
     </div>
   );

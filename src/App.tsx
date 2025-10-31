@@ -1,20 +1,32 @@
 import React, { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import LandingPage from "./pages/landingpage/LandingPage";
+import DayPage from "./pages/DayPage";
+import StagePage from "./pages/StagePage";
+import Credits from "./pages/Credits";
+import Contact from "./pages/Contact";
+// Legacy routes (kept for backwards compatibility)
 import ActOne from "./pages/ActOne";
 import ActTwo from "./pages/ActTwo";
 import ActThree from "./pages/ActThree";
 import ActFour from "./pages/ActFour";
-import Credits from "./pages/Credits";
-import Contact from "./pages/Contact";
 
 function App() {
   const [showMainPage, setShowMainPage] = useState(false);
   const loading = useRef<HTMLDivElement>(null);
   const transitionOverlay = useRef<HTMLDivElement>(null);
   const landingPageRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Handle refresh - always redirect to home (menu)
+  useEffect(() => {
+    if (location.pathname !== '/') {
+      navigate('/', { replace: true });
+    }
+  }, []); // Only run on mount (refresh)
 
   useGSAP(
     () => {
@@ -214,11 +226,15 @@ function App() {
         <div ref={landingPageRef}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            {/* New day routes */}
+            <Route path="/day/:dayId" element={<DayPage />} />
+            <Route path="/stage/:stageId" element={<StagePage />} />
+            {/* Legacy routes (kept for backwards compatibility) */}
             <Route path="/act-one" element={<ActOne />} />
             <Route path="/act-two" element={<ActTwo />} />
             <Route path="/act-three" element={<ActThree />} />
             <Route path="/act-four" element={<ActFour />} />
-            <Route path="/acknowledgements" element={<Credits />} />
+            <Route path="/credits" element={<Credits />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </div>
