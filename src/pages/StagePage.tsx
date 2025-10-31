@@ -20,45 +20,54 @@ function getStageFolder(stageId: string): string {
 async function discoverImages(stageFolder: string, maxAttempts: number = 400): Promise<string[]> {
   const images: string[] = [];
   let consecutiveFailures = 0;
-  const maxConsecutiveFailures = 10; // Stop after 10 consecutive failures (more lenient for gaps)
+  const maxConsecutiveFailures = 15; // Stop after 15 consecutive failures (more lenient for gaps)
   let foundAny = false; // Track if we've found at least one image
+  
+  console.log(`[discoverImages] Starting discovery for ${stageFolder}, maxAttempts: ${maxAttempts}`);
   
   // Try loading images sequentially, stopping early if we hit consecutive failures
   for (let i = 1; i <= maxAttempts; i++) {
     const imagePath = `/${stageFolder}/${stageFolder}${i}.webp`;
     
     const result = await new Promise<string | null>((resolve) => {
-      const img = new Image();
-      const timeout = setTimeout(() => {
-        resolve(null); // Timeout after 2 seconds
-      }, 2000);
+      // Use fetch HEAD request instead of Image for faster checking
+      fetch(imagePath, { method: 'HEAD' })
+        .then((response) => {
+          if (response.ok) {
+            resolve(imagePath);
+          } else {
+            resolve(null);
+          }
+        })
+        .catch(() => {
+          resolve(null);
+        });
       
-      img.onload = () => {
-        clearTimeout(timeout);
-        resolve(imagePath);
-      };
-      img.onerror = () => {
-        clearTimeout(timeout);
-        resolve(null); // Image doesn't exist
-      };
-      img.src = imagePath;
+      // Fallback timeout after 1 second
+      setTimeout(() => {
+        resolve(null);
+      }, 1000);
     });
     
     if (result) {
       images.push(result);
       consecutiveFailures = 0; // Reset counter on success
       foundAny = true;
+      if (images.length <= 3) {
+        console.log(`[discoverImages] Found image ${images.length}: ${result}`);
+      }
     } else {
       consecutiveFailures++;
       // Only stop if we've found images before and hit too many consecutive failures
       // This allows skipping gaps at the beginning
       if (foundAny && consecutiveFailures >= maxConsecutiveFailures) {
-        // Stop if we've hit too many consecutive failures AFTER finding at least one image
+        console.log(`[discoverImages] Stopping after ${consecutiveFailures} consecutive failures. Found ${images.length} images total.`);
         break;
       }
     }
   }
   
+  console.log(`[discoverImages] Discovery complete. Found ${images.length} images.`);
   return images;
 }
 
@@ -104,11 +113,20 @@ export default function StagePage() {
   
   useEffect(() => {
     setImagesLoading(true);
-    discoverImages(stageFolder, 100).then((discoveredImages) => {
+    console.log(`[StagePage] Discovering images for folder: ${stageFolder}`);
+    discoverImages(stageFolder, 400).then((discoveredImages) => {
+      console.log(`[StagePage] Found ${discoveredImages.length} images for ${stageFolder}`);
       // Limit to first 8 images
       const limitedImages = discoveredImages.slice(0, 8);
       setImagePaths(limitedImages);
       setImagesLoading(false);
+      if (limitedImages.length === 0) {
+        console.warn(`[StagePage] No images found for ${stageFolder}`);
+      }
+    }).catch((error) => {
+      console.error(`[StagePage] Error discovering images:`, error);
+      setImagesLoading(false);
+      setImagePaths([]);
     });
   }, [stageFolder]);
 
