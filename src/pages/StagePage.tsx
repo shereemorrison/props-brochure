@@ -23,43 +23,63 @@ async function discoverImages(stageFolder: string, maxAttempts: number = 400): P
   const maxConsecutiveFailures = 15; // Stop after 15 consecutive failures (more lenient for gaps)
   let foundAny = false; // Track if we've found at least one image
   
-  console.log(`[discoverImages] Starting discovery for ${stageFolder}, maxAttempts: ${maxAttempts}`);
+  // Use absolute path - works better in production
+  const baseUrl = window.location.origin;
+  console.log(`[discoverImages] Starting discovery for ${stageFolder}, baseUrl: ${baseUrl}`);
   
   // Try loading images sequentially, stopping early if we hit consecutive failures
   for (let i = 1; i <= maxAttempts; i++) {
-    // Use import.meta.env.BASE_URL for proper path resolution in production
-    const baseUrl = import.meta.env.BASE_URL || '/';
-    const imagePath = `${baseUrl}${stageFolder}/${stageFolder}${i}.webp`.replace(/\/+/g, '/');
+    // Use absolute path starting with / (works in both dev and production)
+    const imagePath = `/${stageFolder}/${stageFolder}${i}.webp`;
     
     const result = await new Promise<string | null>((resolve) => {
-      // Use fetch HEAD request instead of Image for faster checking
-      fetch(imagePath, { method: 'HEAD' })
-        .then((response) => {
-          if (response.ok) {
-            resolve(imagePath);
-          } else {
-            resolve(null);
-          }
-        })
-        .catch(() => {
-          resolve(null);
-        });
+      let resolved = false;
       
-      // Fallback timeout after 1 second
-      setTimeout(() => {
-        resolve(null);
-      }, 1000);
+      // Use Image() constructor - more reliable than fetch on mobile
+      const img = new Image();
+      
+      // Set timeout
+      const timeoutId = setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          resolve(null);
+        }
+      }, 2000); // 2 second timeout
+      
+      img.onload = () => {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeoutId);
+          console.log(`[discoverImages] ✓ Found: ${imagePath}`);
+          resolve(imagePath);
+        }
+      };
+      
+      img.onerror = () => {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeoutId);
+          resolve(null);
+        }
+      };
+      
+      // Start loading
+      img.src = imagePath;
     });
     
     if (result) {
       images.push(result);
       consecutiveFailures = 0; // Reset counter on success
       foundAny = true;
-      if (images.length <= 3) {
+      if (images.length <= 5) {
         console.log(`[discoverImages] Found image ${images.length}: ${result}`);
       }
     } else {
       consecutiveFailures++;
+      if (consecutiveFailures === 1 && !foundAny) {
+        // Log first few failures to help debug
+        console.log(`[discoverImages] Testing ${imagePath}... not found`);
+      }
       // Only stop if we've found images before and hit too many consecutive failures
       // This allows skipping gaps at the beginning
       if (foundAny && consecutiveFailures >= maxConsecutiveFailures) {
@@ -70,6 +90,9 @@ async function discoverImages(stageFolder: string, maxAttempts: number = 400): P
   }
   
   console.log(`[discoverImages] Discovery complete. Found ${images.length} images.`);
+  if (images.length === 0) {
+    console.error(`[discoverImages] No images found for ${stageFolder}! Check if files exist in public/${stageFolder}/`);
+  }
   return images;
 }
 
@@ -116,17 +139,23 @@ export default function StagePage() {
   useEffect(() => {
     setImagesLoading(true);
     console.log(`[StagePage] Discovering images for folder: ${stageFolder}`);
+    console.log(`[StagePage] Current URL: ${window.location.href}`);
+    console.log(`[StagePage] Base URL: ${window.location.origin}`);
+    
     discoverImages(stageFolder, 400).then((discoveredImages) => {
       console.log(`[StagePage] Found ${discoveredImages.length} images for ${stageFolder}`);
+      console.log(`[StagePage] Image paths:`, discoveredImages.slice(0, 3));
       // Limit to first 8 images
       const limitedImages = discoveredImages.slice(0, 8);
       setImagePaths(limitedImages);
       setImagesLoading(false);
       if (limitedImages.length === 0) {
         console.warn(`[StagePage] No images found for ${stageFolder}`);
+        console.warn(`[StagePage] Check browser Network tab for failed requests`);
       }
     }).catch((error) => {
       console.error(`[StagePage] Error discovering images:`, error);
+      console.error(`[StagePage] Error details:`, error.message, error.stack);
       setImagesLoading(false);
       setImagePaths([]);
     });
@@ -314,10 +343,18 @@ export default function StagePage() {
                     src={imagePath}
                     alt={`${stageData.title} - Image ${index + 1}`}
                     loading="lazy"
+                    onError={(e) => {
+                      console.error(`[StagePage] Failed to load image: ${imagePath}`);
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                    onLoad={() => {
+                      console.log(`[StagePage] Successfully loaded: ${imagePath}`);
+                    }}
                     style={{
                       width: '100%',
                       height: '100%',
-                      objectFit: 'cover',
+                      objectFit: 'contain',
                       display: 'block'
                     }}
                   />
