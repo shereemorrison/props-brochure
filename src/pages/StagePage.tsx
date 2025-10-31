@@ -17,10 +17,11 @@ function getStageFolder(stageId: string): string {
 }
 
 // Dynamically discover images in a folder by trying to load them
-async function discoverImages(stageFolder: string, maxAttempts: number = 100): Promise<string[]> {
+async function discoverImages(stageFolder: string, maxAttempts: number = 400): Promise<string[]> {
   const images: string[] = [];
   let consecutiveFailures = 0;
-  const maxConsecutiveFailures = 5; // Stop after 5 consecutive failures
+  const maxConsecutiveFailures = 10; // Stop after 10 consecutive failures (more lenient for gaps)
+  let foundAny = false; // Track if we've found at least one image
   
   // Try loading images sequentially, stopping early if we hit consecutive failures
   for (let i = 1; i <= maxAttempts; i++) {
@@ -28,10 +29,16 @@ async function discoverImages(stageFolder: string, maxAttempts: number = 100): P
     
     const result = await new Promise<string | null>((resolve) => {
       const img = new Image();
+      const timeout = setTimeout(() => {
+        resolve(null); // Timeout after 2 seconds
+      }, 2000);
+      
       img.onload = () => {
+        clearTimeout(timeout);
         resolve(imagePath);
       };
       img.onerror = () => {
+        clearTimeout(timeout);
         resolve(null); // Image doesn't exist
       };
       img.src = imagePath;
@@ -40,10 +47,13 @@ async function discoverImages(stageFolder: string, maxAttempts: number = 100): P
     if (result) {
       images.push(result);
       consecutiveFailures = 0; // Reset counter on success
+      foundAny = true;
     } else {
       consecutiveFailures++;
-      if (consecutiveFailures >= maxConsecutiveFailures) {
-        // Stop if we've hit too many consecutive failures
+      // Only stop if we've found images before and hit too many consecutive failures
+      // This allows skipping gaps at the beginning
+      if (foundAny && consecutiveFailures >= maxConsecutiveFailures) {
+        // Stop if we've hit too many consecutive failures AFTER finding at least one image
         break;
       }
     }
