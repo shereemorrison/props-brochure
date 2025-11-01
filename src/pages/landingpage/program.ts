@@ -1,6 +1,8 @@
 import GUI from "lil-gui"
 import * as THREE from "three"
+// @ts-ignore
 import vertexShader from "./shaders/vertex.glsl"
+// @ts-ignore
 import fragmentShader from "./shaders/fragment.glsl"
 import gsap from "gsap"
 import normalizeWheel from "normalize-wheel"
@@ -105,8 +107,6 @@ export default class Program {
       } else {
         // ========================================
         // TIMELINE: ROTATION → FADE OUT → MENU
-        // ========================================
-        // EDIT THIS SECTION TO MODIFY THE ANIMATION TIMELINE
         // ========================================
         
         anim = gsap.timeline()

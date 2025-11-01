@@ -80,7 +80,6 @@ export default function StagePage() {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLDivElement>(null);
   const storyContainerRef = useRef<HTMLDivElement>(null);
-  const backgroundRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const imagesRef = useRef<(HTMLDivElement | null)[]>([]);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
@@ -115,7 +114,10 @@ export default function StagePage() {
   useEffect(() => {
     setImagesLoading(true);
     discoverImages(stageFolder, 400).then((discoveredImages) => {
+      console.log(`Found ${discoveredImages.length} images for ${stageFolder}`);
+      // Limit to first 8 images
       const limitedImages = discoveredImages.slice(0, 8);
+      console.log(`Setting ${limitedImages.length} images to display`);
       setImagePaths(limitedImages);
       setImagesLoading(false);
     }).catch((error) => {
@@ -130,7 +132,7 @@ export default function StagePage() {
 
   useGSAP(() => {
     // Wait for all refs to be ready
-    if (!blurbRef.current || !titleRef.current || !subtitleRef.current || !backgroundRef.current || !storyContainerRef.current) {
+    if (!blurbRef.current || !titleRef.current || !subtitleRef.current || !storyContainerRef.current) {
       return;
     }
 
@@ -139,27 +141,6 @@ export default function StagePage() {
 
     // Refresh ScrollTrigger to recalculate
     ScrollTrigger.refresh();
-
-    // Set initial state for background
-    gsap.set(backgroundRef.current, {
-      scale: 1,
-      opacity: 0.2
-    });
-
-    // Animate background image with ScrollTrigger
-    ScrollTrigger.create({
-      trigger: storyContainerRef.current,
-      start: 'top top',
-      end: 'bottom top',
-      scrub: 1,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        gsap.set(backgroundRef.current, {
-          scale: 1 + (progress * 0.3),
-          opacity: 0.2 + (progress * 0.2)
-        });
-      }
-    });
 
     // Title and subtitle - animate immediately
     gsap.fromTo([titleRef.current, subtitleRef.current], 
@@ -226,30 +207,40 @@ export default function StagePage() {
     });
 
     // Animate images as they come into view
-    imagesRef.current.forEach((imgContainer) => {
+    imagesRef.current.forEach((imgContainer, index) => {
       if (!imgContainer) return;
 
-      ScrollTrigger.create({
-        trigger: imgContainer,
-        start: 'top 85%',
-        toggleActions: 'play none none none',
-        onEnter: () => {
-          gsap.to(imgContainer, {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.8,
-            ease: 'power2.out'
-          });
-        }
+      // Set initial state - visible by default
+      gsap.set(imgContainer, {
+        opacity: 1,
+        y: 0,
+        scale: 1
       });
 
-      // Set initial state
-      gsap.set(imgContainer, {
-        opacity: 0,
-        y: 30,
-        scale: 0.95
-      });
+      // Only animate if there are multiple images and we want scroll animation
+      if (imagesRef.current.length > 1) {
+        ScrollTrigger.create({
+          trigger: imgContainer,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+          onEnter: () => {
+            gsap.fromTo(imgContainer, 
+              {
+                opacity: 0,
+                y: 30,
+                scale: 0.95
+              },
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.8,
+                ease: 'power2.out'
+              }
+            );
+          }
+        });
+      }
     });
 
     // Cleanup
@@ -263,11 +254,10 @@ export default function StagePage() {
         }
       });
     };
-  }, { scope: storyContainerRef, dependencies: [stageData, imagePaths] });
+  }, { dependencies: [stageData, imagePaths] });
 
   return (
-    <div className="detail-page act-one-story">
-      <div className="story-background-image" ref={backgroundRef} style={{ backgroundImage: `url(${new URL('../assets/propstheatrelogo.webp', import.meta.url).toString()})` }} />
+    <div className="detail-page">
       
       <button className="back-button" onClick={() => navigate(parentDayId ? `/day/${parentDayId}` : '/')}>← Back</button>
       <div className="detail-content" ref={storyContainerRef}>
@@ -300,23 +290,23 @@ export default function StagePage() {
             <div className="stage-images-grid">
               {imagePaths.map((imagePath, index) => (
                 <div 
-                  key={index}
+                  key={`${imagePath}-${index}`}
                   className="stage-image-container"
-                  ref={el => { imagesRef.current[index] = el as HTMLDivElement }}
+                  ref={el => { 
+                    if (el) imagesRef.current[index] = el;
+                  }}
                 >
                   <img 
                     src={imagePath}
                     alt={`${stageData.title} - Image ${index + 1}`}
-                    loading="lazy"
+                    loading="eager"
                     onError={(e) => {
+                      console.error(`Failed to load image ${index + 1}: ${imagePath}`);
                       const target = e.target as HTMLImageElement;
                       target.style.display = 'none';
                     }}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain',
-                      display: 'block'
+                    onLoad={() => {
+                      console.log(`Successfully loaded image ${index + 1}: ${imagePath}`);
                     }}
                   />
                 </div>

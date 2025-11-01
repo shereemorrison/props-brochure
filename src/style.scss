@@ -1,3 +1,13 @@
+// Main SCSS file - imports all organized styles
+@import './styles/_variables';
+@import './styles/layouts/_main';
+@import './styles/components/_header-footer';
+@import './styles/components/_loading';
+@import './styles/components/_transition-overlay';
+@import './styles/pages/_detail-page';
+@import './styles/pages/_day-page';
+@import './styles/pages/_stage-gallery';
+
 // Global styles
 body {
   font-family: "Bungee", "Playfair Display", serif;
@@ -10,32 +20,12 @@ body {
   scrollbar-width: none;
 }
 
-#webgl {
-  position: fixed;
-  inset: 0;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  height: 100dvh;
-  background: rgb(19, 19, 19);
-  touch-action: none;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
+img {
+  max-width: 100%;
+  height: auto;
 }
 
-#app {
-  min-height: 100dvh;
-  z-index: 10;
-  position: relative;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-}
-
-#app.loaded {
-  opacity: 1;
-}
-
+// Legacy/Unused styles - can be removed later
 [data-page] {
   --turn-page: 0;
   --data-page-index: 0;
@@ -46,16 +36,73 @@ body {
     translateY(calc(-4px * (var(--delta-index) * 2 - 1) * var(--turn-page)));
 }
 
-// Variables
-:root {
-  --black: #000;
+.btn {
+  padding: clamp(0.5rem, 2vw, 0.625rem) clamp(1rem, 3vw, 1.25rem);
+  border-radius: clamp(15px, 3vw, 20px);
+  border: none;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: black;
+  &_active {
+    font-weight: 700;
+    background-color: #2b2e3a;
+    color: white;
+  }
 }
 
-// Component styles
-.contain {
-  position: relative;
-  height: 100vh;
+// Responsive overlay container - switches to grid on smaller screens
+.overlay-container {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  @media (max-width: 1024px) {
+    position: relative !important;
+    display: block !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    pointer-events: auto !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  
+  .page-overlay {
+    pointer-events: none;
+    touch-action: manipulation;
+    
+    @media (max-width: 1024px) {
+      position: absolute !important;
+      pointer-events: auto !important;
+      cursor: pointer !important;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .overlay-container {
+    pointer-events: auto;
+  }
 }
 
 .wrapper {
@@ -170,9 +217,8 @@ body {
 }
 
 .counter {
-  position: fixed;
-  bottom: clamp(1rem, 3vh, 2rem);
-  left: clamp(0.5rem, 2vw, 1%);
+  position: flex;
+  align-items: center;
   color: white;
   z-index: 10;
   width: 100%;
@@ -325,54 +371,6 @@ body {
   font-weight: bold;
   pointer-events: none;
   box-sizing: border-box;
-}
-
-// Stage Images Gallery Styles
-.stage-images-section {
-  margin-top: clamp(2rem, 5vh, 3rem);
-  
-  h2 {
-    color: #ffd700;
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    margin-bottom: clamp(1.5rem, 3vw, 2rem);
-    font-family: "Bungee", "Playfair Display", serif;
-  }
-  
-  .stage-images-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(200px, 45vw), 1fr));
-    gap: clamp(1rem, 2vw, 1.5rem);
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
-    box-sizing: border-box;
-    
-    .stage-image-container {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      overflow: visible;
-      border-radius: clamp(6px, 1vw, 8px);
-      background: rgba(255, 215, 0, 0.05);
-      border: 1px solid rgba(255, 215, 0, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 150px;
-      
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        display: block;
-        transition: transform 0.3s ease;
-        opacity: 1;
-        
-        &:hover {
-          transform: scale(1.05);
-        }
-      }
-    }
-  }
 }
 
 // Day Page Styles
@@ -617,7 +615,7 @@ body {
   .page-overlay {
     pointer-events: none;
     touch-action: manipulation;
-    z-index: 3;
+    
     
     // On grid layout, overlays are positioned absolutely in JavaScript
     @media (max-width: 1024px) {
@@ -641,7 +639,6 @@ img {
     pointer-events: auto;
   }
 }
-
 @media (max-width: 768px) {
   .landing-header {
     flex-direction: column;
@@ -690,3 +687,4 @@ img {
     }
   }
 }
+

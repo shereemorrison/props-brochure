@@ -1,21 +1,21 @@
 # Props Theatre - Event Brochure Website
 
-A stunning interactive website for Props Theatre featuring an immersive preloader animation that transforms into a full event brochure experience.
+An interactive website for Props Theatre featuring a GSAP preloader animation that transforms into a full event brochure experience.
 
 ## Features
 
-- **Immersive Preloader**: Animated "Props Theatre" text that fills with progress, then zooms into the "O" creating a dramatic entrance effect
-- **Modern Landing Page**: Clean, professional design showcasing theatre events and information
-- **Smooth Animations**: Powered by GSAP for fluid, professional-grade animations
-- **Responsive Design**: Optimized for all devices and screen sizes
+- **Immersive Preloader**: Animated "Props Theatre" text that fills with progress and transitions away
+- **Modern Landing Page**: Clean design showcasing theatre events and information
+- **Animations**: Powered by GSAP for fluid animations
+- **Responsive Design**: Optimised for all devices and screen sizes
 
 ## Technology Stack
 
 - **React 18** - Modern React with hooks
-- **Vite** - Lightning-fast build tool
-- **GSAP** - Professional animation library
+- **Vite** - Build tool
+- **GSAP** - Animation library
 - **SCSS** - Enhanced CSS with variables and nesting
-- **Modern JavaScript** - ES6+ features
+- **JavaScript** - ES6+ features
 
 ## Getting Started
 
@@ -45,15 +45,3 @@ npm run build
 - `src/style.scss` - Main styles and animations
 - `src/fonts/` - Custom typography (Aeonik font family)
 
-## Customization
-
-This website is designed to be easily customizable for your theatre events:
-
-- Update content in `LandingPage.jsx`
-- Modify colors and styling in `style.scss`
-- Add new sections and components as needed
-- Customize the preloader animation timing and effects
-
-## License
-
-This project is for Props Theatre use. All rights reserved.

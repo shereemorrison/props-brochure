@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import WebGLProgram from './WebGLProgram';
 import { Performance } from '../../data/performances';
@@ -11,11 +11,16 @@ function LandingPage() {
   });
 
   useEffect(() => {
+    console.log("[DEBUG] LandingPage mounted", { skipAnimation });
     // Mark this tab session as having animated once; back navigation will skip
     (window as any).__landingAnimatedOnce = true;
+    
+    return () => {
+      console.log("[DEBUG] LandingPage unmounting");
+    };
   }, []);
 
-  const handlePageClick = (pageIndex: number) => {
+  const handlePageClick = useCallback((pageIndex: number) => {
     const routes = [
       '/day/monday-24th', 
       '/day/tuesday-25th', 
@@ -27,7 +32,7 @@ function LandingPage() {
     if (pageIndex >= 0 && pageIndex < routes.length) {
       navigate(routes[pageIndex]);
     }
-  };
+  }, [navigate]);
 
   const handleBack = () => {};
 

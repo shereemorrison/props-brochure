@@ -1,0 +1,48 @@
+// Layout Components
+#webgl {
+  position: fixed;
+  inset: 0;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  height: 100dvh;
+  background: rgb(19, 19, 19);
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#app {
+  min-height: 100dvh;
+  z-index: 10;
+  position: relative;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+#app.loaded {
+  opacity: 1;
+}
+
+.contain {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+}
+
+.wrapper {
+  background-color: #000;
+  height: 100vh;
+  width: 100vw;
+  color: black;
+  position: fixed;
+  opacity: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+

@@ -7,6 +7,7 @@ import Header from './Header';
 interface MenuProps {
   onPageClick?: (pageIndex: number) => void;
   isVisible: boolean;
+  skipAnimation?: boolean;
 }
 
 const menuItems = [
@@ -18,7 +19,7 @@ const menuItems = [
   { id: 'contact', title: 'Contact', subtitle: '', route: '/contact', year: null, background: '/theatre/theatre6.webp' },
 ];
 
-export default function Menu({ onPageClick, isVisible }: MenuProps) {
+export default function Menu({ onPageClick, isVisible, skipAnimation = false }: MenuProps) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -63,12 +64,26 @@ export default function Menu({ onPageClick, isVisible }: MenuProps) {
   }, [isVisible]);
 
   useEffect(() => {
-    // Only start animation when images are loaded AND menu is visible
-    if (!isVisible || !containerRef.current || !imagesLoaded) return;
+    // Only start animation when menu is visible
+    if (!isVisible || !containerRef.current) return;
+    
+    // If skipping animation (back navigation), show items immediately without waiting for images
+    if (skipAnimation) {
+      gsap.set(itemsRef.current, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        rotation: 0
+      });
+      return;
+    }
+    
+    // For normal animation, wait for images to load
+    if (!imagesLoaded) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // Set initial states
+    // Set initial states for animation
     gsap.set(itemsRef.current, {
       opacity: 0,
       y: 40,
@@ -96,7 +111,7 @@ export default function Menu({ onPageClick, isVisible }: MenuProps) {
     return () => {
       tl.kill();
     };
-  }, [isVisible, imagesLoaded]);
+  }, [isVisible, imagesLoaded, skipAnimation]);
 
   const handleItemClick = (index: number, route: string) => {
     if (onPageClick) {
@@ -182,7 +197,7 @@ export default function Menu({ onPageClick, isVisible }: MenuProps) {
                 margin: '0 auto',
                 touchAction: 'manipulation',
                 backgroundColor: 'rgba(255, 215, 0, 0.05)',
-                opacity: 0, // Start invisible, GSAP will animate
+                opacity: skipAnimation ? 1 : 0, // Start visible if skipping animation, GSAP will animate otherwise
                 justifySelf: 'center'
               }}
               onMouseEnter={(e) => {

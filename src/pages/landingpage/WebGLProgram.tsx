@@ -6,6 +6,9 @@ import { Size } from '../../types/types';
 import gsap from 'gsap';
 import Menu from '../../components/Menu';
 
+// Global flag to prevent animation restart across remounts (React Strict Mode)
+let globalAnimationStarted = false;
+
 interface WebGLProgramProps {
   onPageClick?: (pageIndex: number) => void;
   skipAnimation?: boolean;
@@ -26,18 +29,41 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   
   // Track when to show the menu
-  const [showMenu, setShowMenu] = useState(false);
-  const [canvasOpacity, setCanvasOpacity] = useState(1);
+  // Initialize showMenu to true if skipping animation (for back navigation)
+  const [showMenu, setShowMenu] = useState(skipAnimation);
+  const [canvasOpacity, setCanvasOpacity] = useState(skipAnimation ? 0 : 1);
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    // If skipping animation, show menu immediately
+    console.log("[DEBUG] WebGLProgram useEffect called", { 
+      skipAnimation, 
+      initializedRef: initializedRef.current,
+      globalAnimationStarted 
+    });
+    
+    // If skipping animation, always show menu immediately (even on remount)
     if (skipAnimation) {
       setCanvasOpacity(0);
       setShowMenu(true);
+      initializedRef.current = true;
+      globalAnimationStarted = true;
       return;
     }
     
-    if (!canvasRef.current || !containerRef.current) return;
+    // Prevent re-initialization if already initialized OR if animation already started globally
+    if (initializedRef.current || globalAnimationStarted) {
+      console.log("[DEBUG] WebGLProgram: Already initialized or animation started globally, skipping");
+      return;
+    }
+    
+    if (!canvasRef.current || !containerRef.current) {
+      console.log("[DEBUG] WebGLProgram: Canvas or container not ready");
+      return;
+    }
+
+    console.log("[DEBUG] WebGLProgram: Initializing Three.js scene");
+    initializedRef.current = true;
+    globalAnimationStarted = true;
 
     // Initialize Three.js scene
     const scene = new THREE.Scene();
@@ -65,6 +91,7 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
     const sizes: Size = { width, height };
 
     const program = new Program({ scene, debug, sizes, skipAnimation });
+    console.log("[DEBUG] WebGLProgram: Program instance created (material will be created asynchronously)");
 
     debug.hide();
 
@@ -147,7 +174,7 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
     // ============================================
     const handlePointerDown = (event: PointerEvent) => {
       // Don't interfere with clicks - menu now handles navigation
-      return;
+        return;
     };
 
     // Add pointer event listener to canvas
@@ -158,8 +185,8 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
     // ============================================
     const handlePointerMove = (event: PointerEvent) => {
       // Simplified hover - menu handles navigation now
-      if (canvasRef.current) {
-        canvasRef.current.style.cursor = 'default';
+          if (canvasRef.current) {
+            canvasRef.current.style.cursor = 'default';
       }
     };
 
@@ -171,6 +198,7 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
     // EDIT THIS SECTION TO MODIFY THE FADE OUT TIMING
     // ============================================
     let rotationComplete = false;
+    let animationStarted = false;
     
     const animate = () => {
       animationIdRef.current = requestAnimationFrame(animate);
@@ -178,33 +206,41 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
       renderer.render(scene, camera);
       program.render();
       
+      // Log when animation starts
+      if (!animationStarted && program.material && program.material.uniforms.uProgress.value > 0) {
+        animationStarted = true;
+        console.log("[DEBUG] WebGLProgram: Animation started, uProgress:", program.material.uniforms.uProgress.value);
+      }
+      
       // STEP 2: FADE OUT (triggers when rotation completes)
       // When rotation completes, fade out brochure then show grid
       if (!rotationComplete && program.material && program.material.uniforms.uProgress.value >= 1.0) {
         rotationComplete = true;
-        
+        console.log("[DEBUG] WebGLProgram: Rotation complete, uProgress:", program.material.uniforms.uProgress.value);
+          
         // Fade out the brochure/canvas smoothly
         // Duration: 0.8 seconds
         // EDIT THIS TO CHANGE FADE TIMING
-        gsap.to([canvasRef.current, containerRef.current], {
-          opacity: 0,
+              gsap.to([canvasRef.current, containerRef.current], {
+                opacity: 0,
           duration: 0.8,
           ease: 'power2.in',
-          onComplete: () => {
+                onComplete: () => {
             // Hide canvas after fade
-            setCanvasOpacity(0);
-            if (canvasRef.current) {
-              canvasRef.current.style.opacity = '0';
-              canvasRef.current.style.pointerEvents = 'none';
-            }
-            if (containerRef.current) {
-              containerRef.current.style.opacity = '0';
-              containerRef.current.style.pointerEvents = 'none';
-            }
-            
+                  setCanvasOpacity(0);
+                  if (canvasRef.current) {
+                    canvasRef.current.style.opacity = '0';
+                    canvasRef.current.style.pointerEvents = 'none';
+                  }
+                  if (containerRef.current) {
+                    containerRef.current.style.opacity = '0';
+                    containerRef.current.style.pointerEvents = 'none';
+                  }
+                  
             // STEP 3: SHOW MENU (after fade completes)
             setShowMenu(true);
-          }
+            console.log("[DEBUG] WebGLProgram: Menu shown");
+                      }
         });
       }
     };
@@ -277,6 +313,7 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
       <Menu 
         isVisible={showMenu} 
         onPageClick={onPageClick}
+        skipAnimation={skipAnimation}
       />
     </>
   );

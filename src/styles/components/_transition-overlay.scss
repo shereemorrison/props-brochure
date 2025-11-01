@@ -1,0 +1,40 @@
+// Transition Overlay - Curtains Effect (Unified Background)
+.transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 25; // Above pages animation (z-index 0-1) but below loading screen (z-index 20) initially
+  display: none;
+  pointer-events: none;
+  background-image: url('/curtains/manos-gkikas-pPA5ActWLLI-unsplash.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  &-left,
+  &-right {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background-image: url('/curtains/manos-gkikas-pPA5ActWLLI-unsplash.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    will-change: transform;
+  }
+  
+  &-left {
+    left: 0;
+    transform-origin: left center;
+    background-position: left center;
+  }
+  
+  &-right {
+    right: 0;
+    transform-origin: right center;
+    background-position: right center;
+  }
+}
+

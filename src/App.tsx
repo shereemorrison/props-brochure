@@ -15,15 +15,17 @@ import ActFour from "./pages/ActFour";
 
 function App() {
   const [showMainPage, setShowMainPage] = useState(false);
+  const [loadingHidden, setLoadingHidden] = useState(false);
   const loading = useRef<HTMLDivElement>(null);
-  const transitionOverlay = useRef<HTMLDivElement>(null);
   const landingPageRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
   // Handle refresh - always redirect to home (menu)
   useEffect(() => {
-    if (location.pathname !== '/') {
+    // Only redirect if we're not already on the home page and showMainPage hasn't been set yet
+    if (location.pathname !== '/' && !showMainPage) {
+      console.log("[DEBUG] App: Redirecting to home from", location.pathname);
       navigate('/', { replace: true });
     }
   }, []); // Only run on mount (refresh)
@@ -36,6 +38,24 @@ function App() {
       gsap.set(".counter-word[data-word='lights']", { y: 0, opacity: 1 });
       gsap.set(".counter-word[data-word='camera']", { y: 200, opacity: 0 });
       gsap.set(".counter-word[data-word='action']", { y: 200, opacity: 0 });
+      
+      // Initialize curtain elements - ensure they're positioned correctly
+      const leftCurtain = document.querySelector(".loadings-left");
+      const rightCurtain = document.querySelector(".loadings-right");
+      
+      console.log("[DEBUG] Curtain elements check:", {
+        leftCurtain: leftCurtain ? "FOUND" : "NOT FOUND",
+        rightCurtain: rightCurtain ? "FOUND" : "NOT FOUND",
+        loadingRef: loading.current ? "FOUND" : "NOT FOUND"
+      });
+      
+      if (leftCurtain && rightCurtain) {
+        gsap.set(".loadings-left", { x: "0%", opacity: 1, display: "block" });
+        gsap.set(".loadings-right", { x: "0%", opacity: 1, display: "block" });
+        console.log("[DEBUG] Curtain elements initialized");
+      } else {
+        console.error("[DEBUG] Curtain elements not found in DOM!");
+      }
 
       // Progress bar animation - matches the word transitions
       gsap.from(".progress-fill", {
@@ -121,69 +141,56 @@ function App() {
         ease: "power2.in",
       });
 
-      // After "action" swipes out, trigger curtain reveal
-      // Fade out loading screen
-      gsap.to(".loadings", {
+      // After Props Theatre swipes out, show pages animation behind curtains
+      // Pages start when word-loader fades, then curtains split to reveal them
+      tl.to(".loadings .word-loader, .loadings .counter", {
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.inOut",
+      }, 4.0)
+      .call(() => {
+        // Show pages animation behind curtains (original timing - 4.2s)
+        console.log("[DEBUG] Showing pages animation at 4.2s");
+        setShowMainPage(true);
+      }, [], 4.2)
+      .to(".loadings-left", {
+        x: "-100%",
+        duration: 1.5,
+        ease: "power3.inOut",
+        onStart: () => console.log("[DEBUG] Left curtain animation started at 4.3s"),
+        onComplete: () => console.log("[DEBUG] Left curtain animation completed")
+      }, 4.3)
+      .to(".loadings-right", {
+        x: "100%",
+        duration: 1.5,
+        ease: "power3.inOut",
+        onStart: () => console.log("[DEBUG] Right curtain animation started at 4.3s"),
+        onComplete: () => console.log("[DEBUG] Right curtain animation completed")
+      }, 4.3)
+      .to(".loadings", {
         opacity: 0,
         duration: 0.3,
-        delay: 4.2,
         ease: "power2.inOut",
         onComplete: () => {
+          console.log("[DEBUG] Loading screen fade complete, hiding");
           gsap.set(".loadings", { display: "none" });
-          setShowMainPage(true);
+          setLoadingHidden(true);
         }
-      });
+      }, 5.8);
     },
     { scope: loading }
   );
 
-  // Animate curtain reveal when landing page is ready
-  useEffect(() => {
-    if (showMainPage && transitionOverlay.current && landingPageRef.current) {
-      // Set initial states
-      gsap.set(".transition-overlay", { display: "block" });
-      gsap.set(".transition-overlay-left", { x: "0%" });
-      gsap.set(".transition-overlay-right", { x: "0%" });
-      gsap.set(landingPageRef.current, { opacity: 0, scale: 0.95 });
-      
-      // Curtain reveal animation - split open horizontally
-      const curtainTL = gsap.timeline({
-        delay: 0.3,
-        onComplete: () => {
-          gsap.set(".transition-overlay", { display: "none" });
-        }
-      });
-      
-      curtainTL
-        .to(".transition-overlay-left", {
-          x: "-100%",
-          duration: 1.2,
-          ease: "power3.inOut",
-        }, 0)
-        .to(".transition-overlay-right", {
-          x: "100%",
-          duration: 1.2,
-          ease: "power3.inOut",
-        }, 0)
-        .to(
-          landingPageRef.current,
-          {
-            opacity: 1,
-            scale: 1,
-            duration: 1.0,
-            ease: "power2.out",
-          },
-          0.2
-        );
-    }
-  }, [showMainPage]);
-
   return (
     <>
-      {/* Loading screen */}
-      {!showMainPage && (
+      {/* Loading screen with curtains - keep mounted until curtain animation completes */}
+      {!loadingHidden && (
         <div className="contain">
           <div className="loadings" ref={loading}>
+            {/* Curtain elements for split animation */}
+            <div className="loadings-left"></div>
+            <div className="loadings-right"></div>
+            
             <div className="word-loader">
               <div className="word-progress">
                 <div className="word-container props">
@@ -214,14 +221,8 @@ function App() {
           </div>
         </div>
       )}
-
-      {/* Transition overlay - theatrical curtains */}
-      <div className="transition-overlay" ref={transitionOverlay}>
-        <div className="transition-overlay-left"></div>
-        <div className="transition-overlay-right"></div>
-      </div>
       
-      {/* App routes - revealed as curtains open */}
+      {/* App routes - pages animation starts behind curtains, revealed by split */}
       {showMainPage && (
         <div ref={landingPageRef}>
           <Routes>
