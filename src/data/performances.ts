@@ -11,7 +11,7 @@ export interface Stage {
 export interface Day {
   id: string;
   day: string; // "Monday 24th", "Tuesday 25th", etc.
-  year: number; // 2026
+  year: number; // 2025
   stages: Stage[];
   hasThankYou?: boolean; // For Thursday which has Thank You section
 }
@@ -20,7 +20,7 @@ export const days: Day[] = [
   {
     id: 'monday-24th',
     day: 'Monday 24th',
-    year: 2026,
+    year: 2025,
     stages: [
       {
         id: 'stage-one-monday',
@@ -51,7 +51,7 @@ export const days: Day[] = [
   {
     id: 'tuesday-25th',
     day: 'Tuesday 25th',
-    year: 2026,
+    year: 2025,
     stages: [
       {
         id: 'stage-one-tuesday',
@@ -82,7 +82,7 @@ export const days: Day[] = [
   {
     id: 'wednesday-26th',
     day: 'Wednesday 26th',
-    year: 2026,
+    year: 2025,
     stages: [
       {
         id: 'stage-one-wednesday',
@@ -113,7 +113,7 @@ export const days: Day[] = [
   {
     id: 'thursday-27th',
     day: 'Thursday 27th',
-    year: 2026,
+    year: 2025,
     hasThankYou: true,
     stages: [
       {

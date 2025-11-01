@@ -57,20 +57,34 @@ function App() {
         console.error("[DEBUG] Curtain elements not found in DOM!");
       }
 
-      // Progress bar animation - matches the word transitions
+      // TIMING CALCULATION:
+      // - lights/camera/action starts at 0s (same time as progress bar)
+      // - WebGLProgram starts loading: 0s (immediately, so it has plenty of time to initialize)
+      // - lights: 0s start, 0.7s duration → ends 0.7s
+      // - camera enter: starts at 0.25s (overlap), 0.7s duration → ends 0.95s
+      // - camera exit: starts at 1.1s, 0.7s duration → ends 1.8s
+      // - action enter: starts at 1.35s, 0.7s duration → ends 2.05s
+      // - action exit: starts at 2.2s, 0.7s duration → ends 2.9s
+      // - Props Theatre transition starts: 2.9s + 0.2s = 3.1s
+      // - Props Theatre transition ends: 3.1s + 0.8s = 3.9s (slower, smoother transition)
+      // - Curtains split starts: 3.9s (immediately after Props Theatre transition)
+
+      // Progress bar animation - starts at 0s, matches the word transitions
       gsap.from(".progress-fill", {
         width: 0,
         duration: 2,
         ease: "power2.inOut",
       });
 
-      // Animate words moving up sequentially, timed to finish just before Props Theatre transition
-      // Props Theatre letters transition at delay 3.5s, so finish words around 3.2s
+      // lights/camera/action animation
+      // lights is visible from start (no transition in) - same time as Props Theatre appears
+      // lights stays visible for similar duration as camera/action, then transitions up/out
+      // camera and action animate in/out sequentially
       tl.to(".counter-word[data-word='lights']", {
         y: -200,
         opacity: 0,
         duration: 0.7,
-        delay: 0.5,
+        delay: 0.7, // Stay visible for 0.7s before transitioning up (same duration as camera/action visible time)
       })
         .fromTo(
           ".counter-word[data-word='camera']",
@@ -83,7 +97,7 @@ function App() {
             opacity: 1,
             duration: 0.7,
           },
-          "-=0.45"
+          "-=0.45" // Overlap with lights exit
         )
         .to(
           ".counter-word[data-word='camera']",
@@ -105,7 +119,7 @@ function App() {
             opacity: 1,
             duration: 0.7,
           },
-          "-=0.45"
+          "-=0.45" // Overlap with camera exit
         )
         .to(
           ".counter-word[data-word='action']",
@@ -117,6 +131,7 @@ function App() {
           "+=0.15"
         );
 
+      // Letters turn gold during progress bar fill
       gsap.to(".letter", {
         color: "#ffd700",
         textShadow: "0 0 10px #ffd700",
@@ -126,57 +141,93 @@ function App() {
         ease: "power2.out",
       });
 
+      // Progress fill fades out slightly before Props Theatre transition
       gsap.to(".progress-fill", {
         opacity: 0,
-        delay: 3,
+        delay: 2.9, // Right when action ends
         duration: 0.5,
       });
 
-      gsap.to(".props, .theatre .letter", {
-        x: (index) => index < 2 ? -200 : 200,
-        opacity: 0,
-        duration: 0.5,
-        delay: 3.5,
-        stagger: 0.05,
-        ease: "power2.in",
-      });
+      // Start loading WebGLProgram immediately (at 0s) behind curtains
+      // This gives it plenty of time to initialize and render before curtains split
+      tl.call(() => {
+        console.log("[DEBUG] Starting WebGLProgram loading behind curtains at 0s");
+        setShowMainPage(true);
+      }, [], 0); // Start immediately
 
-      // After Props Theatre swipes out, show pages animation behind curtains
-      // Pages start when word-loader fades, then curtains split to reveal them
+      // Props Theatre letters transition off - starts 0.2s after lights/camera/action ends
+      // Action ends at 2.9s, so transition starts at 3.1s
+      // Slower, smoother transition: longer duration, bigger stagger, smoother easing
+      // Letters fly further off the edges for a more dramatic effect
+      // Split from the center of the entire phrase (all 12 letters together)
+      // First 6 letters (indices 0-5: "Props" + "T") go left, last 6 (indices 6-11: "heatre") go right
+      // Query letters when animation actually starts (not during setup)
+      // Add animation to timeline at 3.1s
+      tl.call(() => {
+        const allLetters = loading.current?.querySelectorAll(".props .letter, .theatre .letter");
+        if (allLetters && allLetters.length === 12) {
+          console.log("[DEBUG] Found", allLetters.length, "letters for Props Theatre transition");
+          // Add animation to the timeline so it runs at the correct time
+          tl.to(Array.from(allLetters), {
+            x: (index) => {
+              // Split from center: 12 letters total, first 6 go left, last 6 go right
+              return index < 6 ? -500 : 500;
+            },
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power1.inOut",
+          }, "<"); // Start immediately after the call (at 3.1s)
+        } else {
+          console.warn("[DEBUG] Expected 12 letters, found:", allLetters?.length || 0);
+        }
+      }, [], 3.1); // Run at 3.1s when animation should start
+
+      // Hide word-loader and counter when Props Theatre transition completes
+      // Props Theatre transition ends at 3.1s + 0.8s = 3.9s
       tl.to(".loadings .word-loader, .loadings .counter", {
         opacity: 0,
-        duration: 0.2,
+        duration: 0.2, // Slightly longer fade
         ease: "power2.inOut",
-      }, 4.0)
+      }, 3.9) // Right when Props Theatre transition completes
+      // Curtains split immediately after Props Theatre transition completes
+      // Start WebGLProgram animation at the same time curtains split
       .call(() => {
-        // Show pages animation behind curtains (original timing - 4.2s)
-        console.log("[DEBUG] Showing pages animation at 4.2s");
-        setShowMainPage(true);
-      }, [], 4.2)
+        console.log("[DEBUG] Curtains splitting - starting WebGLProgram animation at 3.9s");
+        window.dispatchEvent(new CustomEvent('startWebGLAnimation'));
+      }, [], 3.9) // Same time as Props Theatre transition completes
       .to(".loadings-left", {
         x: "-100%",
         duration: 1.5,
         ease: "power3.inOut",
-        onStart: () => console.log("[DEBUG] Left curtain animation started at 4.3s"),
+        onStart: () => console.log("[DEBUG] Left curtain animation started at 3.9s"),
         onComplete: () => console.log("[DEBUG] Left curtain animation completed")
-      }, 4.3)
+      }, 3.9) // Same time as Props Theatre transition completes
       .to(".loadings-right", {
         x: "100%",
         duration: 1.5,
         ease: "power3.inOut",
-        onStart: () => console.log("[DEBUG] Right curtain animation started at 4.3s"),
+        onStart: () => console.log("[DEBUG] Right curtain animation started at 3.9s"),
         onComplete: () => console.log("[DEBUG] Right curtain animation completed")
-      }, 4.3)
+      }, 3.9) // Same time as Props Theatre transition completes
+      // Make background transparent immediately when curtains split
+      // This reveals WebGLProgram behind while curtains are still animating off screen
+      .to(".loadings", {
+        backgroundColor: "rgba(0, 0, 0, 0)",
+        duration: 0.2,
+        ease: "power2.out",
+      }, 3.9) // Same time as curtains split
+      // Hide the entire loading screen after curtains have moved off screen
       .to(".loadings", {
         opacity: 0,
-        duration: 0.3,
+        duration: 0.1,
         ease: "power2.inOut",
         onComplete: () => {
           console.log("[DEBUG] Loading screen fade complete, hiding");
           gsap.set(".loadings", { display: "none" });
           setLoadingHidden(true);
         }
-      }, 5.8);
+      }, 5.4); // After curtains animation completes (3.9s + 1.5s)
     },
     { scope: loading }
   );

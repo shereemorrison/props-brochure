@@ -40,9 +40,9 @@ function LandingPage() {
     <div className="wrapper">
       <Header />
 
-      <footer className="landing-footer">
-        November 2025
-      </footer>
+      {/* <footer className="landing-footer">
+        //TODO: Add footer
+      </footer> */}
 
       <WebGLProgram 
         onPageClick={handlePageClick} 

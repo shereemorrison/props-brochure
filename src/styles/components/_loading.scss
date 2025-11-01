@@ -93,12 +93,14 @@
 .counter {
   position: fixed;
   bottom: clamp(1rem, 3vh, 2rem);
-  left: clamp(0.5rem, 2vw, 1%);
+  left: 0;
+  right: 0;
   color: white;
   z-index: 10;
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
   
   .counter-word {
     font-size: clamp(2.5em, 8vw, 5em);

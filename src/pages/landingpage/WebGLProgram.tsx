@@ -104,6 +104,28 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
     sizesRef.current = sizes;
     raycasterRef.current = raycaster;
 
+    // Listen for custom event to start animation when curtains split
+    const handleStartAnimation = () => {
+      console.log("[DEBUG] WebGLProgram: Received startAnimation event");
+      // Use programRef to ensure we have the latest program instance
+      if (programRef.current && programRef.current.animationTimeline) {
+        if (programRef.current.animationTimeline.paused()) {
+          programRef.current.startAnimation();
+        } else {
+          console.log("[DEBUG] WebGLProgram: Animation already running");
+        }
+      } else {
+        console.log("[DEBUG] WebGLProgram: Program or timeline not ready yet, will retry");
+        // Retry after a short delay if program isn't ready
+        setTimeout(() => {
+          if (programRef.current && programRef.current.animationTimeline && programRef.current.animationTimeline.paused()) {
+            programRef.current.startAnimation();
+          }
+        }, 100);
+      }
+    };
+    window.addEventListener('startWebGLAnimation', handleStartAnimation);
+
     // ============================================
     // RESPONSIVE RESIZE HANDLER with ResizeObserver
     // ============================================
@@ -263,6 +285,7 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
       }
 
       window.removeEventListener('resize', windowResizeHandler);
+      window.removeEventListener('startWebGLAnimation', handleStartAnimation);
 
       if (canvasRef.current) {
         canvasRef.current.removeEventListener('pointerdown', handlePointerDown);

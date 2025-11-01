@@ -109,7 +109,7 @@ export default class Program {
         // TIMELINE: ROTATION → FADE OUT → MENU
         // ========================================
         
-        anim = gsap.timeline()
+        anim = gsap.timeline({ paused: true }) // Pause initially - will be started when curtains split
         this.animationTimeline = anim
 
         // STEP 1: ROTATION (uProgress 0 → 1)
@@ -428,6 +428,13 @@ export default class Program {
     this.scrollY.target += scrollY
 
     this.material.uniforms.uSpeedY.value += scrollY
+  }
+
+  startAnimation() {
+    if (this.animationTimeline && this.animationTimeline.paused()) {
+      console.log("[DEBUG] Program: Starting animation timeline");
+      this.animationTimeline.play();
+    }
   }
 
   render() {
