@@ -133,11 +133,14 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
         left: 0,
         width: '100vw',
         height: '100vh',
+        minHeight: '100vh',
         overflowY: 'auto',
         overflowX: 'hidden',
         zIndex: 100,
         background: 'radial-gradient(ellipse at center, #1a1a1a 0%, #000000 100%)',
-        WebkitOverflowScrolling: 'touch'
+        WebkitOverflowScrolling: 'touch',
+        // Ensure proper scrolling on mobile
+        overscrollBehavior: 'contain'
       }}
     >
       {/* Header - Matching Landing Page */}
@@ -145,6 +148,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
 
       {/* Content */}
       <div
+        className="menu-content-container"
         style={{
           position: 'relative',
           zIndex: 2,
@@ -152,10 +156,13 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'flex-start', // Allow natural scrolling on mobile
           padding: 'clamp(2rem, 6vh, 4rem) clamp(1rem, 3vw, 3rem)',
           paddingTop: 'clamp(8rem, 12vh, 10rem)', // Extra padding for header
-          boxSizing: 'border-box'
+          paddingBottom: 'clamp(4rem, 8vh, 6rem)', // Extra padding at bottom for mobile scrolling
+          boxSizing: 'border-box',
+          // Ensure content can grow beyond viewport
+          flexShrink: 0
         }}
       >
         {/* Menu Items Grid - Page-like Layout */}

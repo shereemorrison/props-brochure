@@ -1,3 +1,11 @@
+// Menu content container - allows proper scrolling on mobile
+.menu-content-container {
+  // Center content on desktop when it fits in viewport
+  @media (min-width: 1024px) {
+    justify-content: center;
+  }
+}
+
 // Menu component styles
 .menu-grid {
   display: grid;
@@ -10,6 +18,12 @@
   box-sizing: border-box;
   padding: clamp(1rem, 4vh, 2rem) clamp(0.5rem, 2vw, 1.5rem);
   margin: 0 auto;
+  
+  // Center grid vertically on desktop when content fits in viewport
+  @media (min-width: 1024px) {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
 
   // On larger screens (desktop), ensure all 6 items fit in one line
   @media (min-width: 1024px) {

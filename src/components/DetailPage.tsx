@@ -42,24 +42,24 @@ function DetailPage({ performance, onBack }: DetailPageProps) {
           </p>
           {performance.cast.length > 0 && (
             <div className="cast-grid" style={{ marginTop: 'clamp(1.5rem, 3vh, 2rem)' }}>
-              {performance.cast.map((member, index) => (
-                <div key={index} style={{
-                  background: 'rgba(255, 215, 0, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                  padding: 'clamp(0.75rem, 2vw, 1rem)',
-                  borderRadius: 'clamp(8px, 1.5vw, 10px)',
-                  border: '1px solid rgba(255, 215, 0, 0.3)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-                }}>
-                  <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: 'Bungee, "Playfair Display", serif' }}>
+            {performance.cast.map((member, index) => (
+              <div key={index} style={{
+                background: 'rgba(255, 215, 0, 0.1)',
+                backdropFilter: 'blur(10px)',
+                padding: 'clamp(0.75rem, 2vw, 1rem)',
+                borderRadius: 'clamp(8px, 1.5vw, 10px)',
+                border: '1px solid rgba(255, 215, 0, 0.3)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+              }}>
+                <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: 'Bungee, "Playfair Display", serif' }}>
                     {member.name}
-                  </div>
-                  <div style={{ color: '#ffffff', opacity: '0.8', fontFamily: 'Bungee, "Playfair Display", serif' }}>
-                    {member.role}
-                  </div>
                 </div>
-              ))}
-            </div>
+                <div style={{ color: '#ffffff', opacity: '0.8', fontFamily: 'Bungee, "Playfair Display", serif' }}>
+                  {member.role}
+                </div>
+              </div>
+            ))}
+          </div>
           )}
         </div>
         

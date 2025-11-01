@@ -185,3 +185,19 @@ export function getGalleryImages(stageId: string): string[] {
   return images.map(img => img.path);
 }
 
+// Helper function to get all unique images from all stages (for gallery/credits page)
+export function getAllGalleryImages(): string[] {
+  const allImages = new Set<string>();
+  
+  // Collect all image paths from all stages
+  Object.values(galleryImages).forEach(stageImages => {
+    stageImages.forEach(img => {
+      if (img.path) {
+        allImages.add(img.path);
+      }
+    });
+  });
+  
+  return Array.from(allImages);
+}
+

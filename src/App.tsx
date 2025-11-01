@@ -370,6 +370,7 @@ function App() {
             <Route path="/act-three" element={<ActThree />} />
             <Route path="/act-four" element={<ActFour />} />
             <Route path="/credits" element={<Credits />} />
+            <Route path="/acknowledgements" element={<Credits />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </div>

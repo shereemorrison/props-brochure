@@ -55,7 +55,7 @@ export default function StagePage() {
     console.log(`Found ${images.length} gallery images for stage: ${stageId}`);
     
     setImagePaths(images);
-    setImagesLoading(false);
+      setImagesLoading(false);
   }, [stageId]);
 
   // Split the summary into words
@@ -163,7 +163,7 @@ export default function StagePage() {
               duration: 1,
               ease: 'power2.out',
               immediateRender: false
-            });
+      });
           }
         }
       }, 500);
@@ -302,14 +302,14 @@ export default function StagePage() {
             Performer names and roles will go here
           </p>
           {stageData.cast.length > 0 && (
-            <div className="cast-grid">
-              {stageData.cast.map((member, i) => (
-                <div key={i} className="cast-member-card">
-                  <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.name}</div>
-                  <div style={{ color: '#ffffff', opacity: 0.8, fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.role}</div>
-                </div>
-              ))}
-            </div>
+          <div className="cast-grid">
+            {stageData.cast.map((member, i) => (
+              <div key={i} className="cast-member-card">
+                <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.name}</div>
+                <div style={{ color: '#ffffff', opacity: 0.8, fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.role}</div>
+              </div>
+            ))}
+          </div>
           )}
         </section>
 
