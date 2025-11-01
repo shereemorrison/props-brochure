@@ -13,6 +13,10 @@ import ActTwo from "./pages/ActTwo";
 import ActThree from "./pages/ActThree";
 import ActFour from "./pages/ActFour";
 
+// Import curtain image - bundled with app for immediate availability
+// @ts-ignore - Image import handled by Vite
+import curtainImage from "./assets/images/curtains.jpg";
+
 function App() {
   // Always render the main page from the start - it's hidden behind curtains
   const [showMainPage, setShowMainPage] = useState(true);
@@ -25,12 +29,9 @@ function App() {
   // Preload curtain image first (highest priority) to prevent flash on mobile
   // Then preload all WebGL images
   useEffect(() => {
-    // Preload curtain image with highest priority
-    const curtainImg = new Image();
-    curtainImg.loading = 'eager';
-    curtainImg.src = '/curtains/manos-gkikas-pPA5ActWLLI-unsplash.jpg';
-    console.log("[DEBUG] Preloading curtain image...");
-    
+    // Curtain image is already imported and bundled, so it's immediately available
+    // No need to preload - it's part of the app bundle
+    console.log("[DEBUG] Curtain image is bundled and ready:", curtainImage);
     const imagePaths = [
       "/pages/p1.jpg",
       "/pages/p2.jpg",
@@ -315,8 +316,14 @@ function App() {
         <div className="contain">
           <div className="loadings" ref={loading}>
             {/* Curtain elements for split animation */}
-            <div className="loadings-left"></div>
-            <div className="loadings-right"></div>
+            <div 
+              className="loadings-left"
+              style={{ backgroundImage: `url(${curtainImage})` }}
+            ></div>
+            <div 
+              className="loadings-right"
+              style={{ backgroundImage: `url(${curtainImage})` }}
+            ></div>
             
             <div className="word-loader">
               <div className="word-progress">
