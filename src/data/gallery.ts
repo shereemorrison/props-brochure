@@ -6,17 +6,40 @@ const stageoneImages = import.meta.glob('../assets/images/stageone/*.webp', { ea
 const stagetwoImages = import.meta.glob('../assets/images/stagetwo/*.webp', { eager: true });
 const stagethreeImages = import.meta.glob('../assets/images/stagethree/*.webp', { eager: true });
 
+// Debug: Log glob import results
+console.log('[gallery.ts] Glob import results:', {
+  stageone: Object.keys(stageoneImages).length,
+  stagetwo: Object.keys(stagetwoImages).length,
+  stagethree: Object.keys(stagethreeImages).length
+});
+
 // Helper to convert glob results to sorted array of paths
 function getSortedImagePaths(images: Record<string, any>): string[] {
-  return Object.values(images)
-    .map((img: any) => img.default || img)
-    .filter((path: string) => path && typeof path === 'string')
+  const paths = Object.values(images)
+    .map((img: any) => {
+      // Handle Vite's glob import format
+      if (img && typeof img === 'object') {
+        return img.default || img;
+      }
+      return img;
+    })
+    .filter((path: any) => {
+      // Filter out undefined, null, and non-string values
+      if (!path) return false;
+      if (typeof path !== 'string') {
+        console.warn('[getSortedImagePaths] Non-string path found:', path);
+        return false;
+      }
+      return true;
+    })
     .sort((a: string, b: string) => {
       // Extract numbers from filenames for proper sorting
       const numA = parseInt(a.match(/\d+/)?.[0] || '0', 10);
       const numB = parseInt(b.match(/\d+/)?.[0] || '0', 10);
       return numA - numB;
     });
+  
+  return paths;
 }
 
 // Get all images sorted by filename number
@@ -29,6 +52,11 @@ const allStagetwoImages = getSortedImagePaths(stagetwoImages).filter((path: stri
 const allStagethreeImages = getSortedImagePaths(stagethreeImages).filter((path: string) => 
   !path.includes(' copy') // Exclude "copy" files
 );
+
+// Debug logging
+console.log('[gallery.ts] Stage one images:', allStageoneImages.length);
+console.log('[gallery.ts] Stage two images:', allStagetwoImages.length);
+console.log('[gallery.ts] Stage three images:', allStagethreeImages.length);
 
 // For backwards compatibility with stage pages, keep first 8 images
 const stageone1 = allStageoneImages[0];
@@ -214,14 +242,48 @@ export function getGalleryImages(stageId: string): string[] {
 }
 
 // Helper function to get all unique images from all stages (for gallery/credits page)
-export function getAllGalleryImages(): string[] {
+// Limits to a reasonable number to prevent performance issues
+export function getAllGalleryImages(maxImages: number = 100): string[] {
   const allImages = new Set<string>();
   
-  // Include all images from all three stages (excluding "copy" files)
-  allStageoneImages.forEach((path: string) => allImages.add(path));
-  allStagetwoImages.forEach((path: string) => allImages.add(path));
-  allStagethreeImages.forEach((path: string) => allImages.add(path));
+  // Calculate how many images to take from each stage (evenly distributed)
+  const totalAvailable = allStageoneImages.length + allStagetwoImages.length + allStagethreeImages.length;
+  const imagesPerStage = Math.ceil(maxImages / 3);
   
-  return Array.from(allImages);
+  // Take evenly spaced samples from each stage to ensure variety
+  function sampleArray<T>(arr: T[], count: number): T[] {
+    if (arr.length === 0) return [];
+    if (count >= arr.length) return arr;
+    
+    const step = arr.length / count;
+    const sampled: T[] = [];
+    for (let i = 0; i < count; i++) {
+      const index = Math.floor(i * step);
+      sampled.push(arr[index]);
+    }
+    return sampled;
+  }
+  
+  // Sample images from each stage
+  sampleArray(allStageoneImages, imagesPerStage).forEach((path: string) => {
+    if (path && typeof path === 'string') {
+      allImages.add(path);
+    }
+  });
+  sampleArray(allStagetwoImages, imagesPerStage).forEach((path: string) => {
+    if (path && typeof path === 'string') {
+      allImages.add(path);
+    }
+  });
+  sampleArray(allStagethreeImages, imagesPerStage).forEach((path: string) => {
+    if (path && typeof path === 'string') {
+      allImages.add(path);
+    }
+  });
+  
+  const result = Array.from(allImages).slice(0, maxImages);
+  console.log('[getAllGalleryImages] Limited to', result.length, 'images (from', totalAvailable, 'total available)');
+  console.log('[getAllGalleryImages] Sample paths:', result.slice(0, 3));
+  return result;
 }
 

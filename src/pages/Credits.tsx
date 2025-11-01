@@ -11,6 +11,35 @@ export default function Credits() {
   // Get all unique images from all stages
   const allImages = getAllGalleryImages();
   
+  // Debug logging
+  React.useEffect(() => {
+    console.log('[Credits] allImages:', allImages.length, 'images');
+    if (allImages.length > 0) {
+      console.log('[Credits] First few image paths:', allImages.slice(0, 3));
+    } else {
+      console.warn('[Credits] No images found! Check gallery.ts');
+    }
+  }, [allImages]);
+  
+  // Show message if no images
+  if (allImages.length === 0) {
+    return (
+      <div className="detail-page credits-page" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: 'white', textAlign: 'center', padding: '2rem' }}>
+          <h2>No images found</h2>
+          <p>Please check that images exist in src/assets/images/stageone, stagetwo, and stagethree folders.</p>
+          <button 
+            className="back-button" 
+            onClick={() => navigate('/')}
+            style={{ marginTop: '2rem' }}
+          >
+            ← Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="detail-page credits-page" style={{ padding: 0 }}>
       <button 
