@@ -217,15 +217,74 @@ export default class Program {
       return this.createMenuPage(title)
     })
 
-    const imagePromises = imagePaths.map((path) => {
-      return new Promise<HTMLImageElement>((resolve) => {
+    const imagePromises = imagePaths.map((path, index) => {
+      return new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image()
-        img.onload = () => resolve(img)
+        let resolved = false
+        
+        // Reduced timeout - images should load quickly if preloaded
+        const timeout = setTimeout(() => {
+          if (!resolved) {
+            resolved = true
+            console.error(`[DEBUG] Image ${index + 1} (${path}) timed out after 5s`)
+            reject(new Error(`Image ${index + 1} timeout: ${path}`))
+          }
+        }, 5000) // 5 second timeout - should be fast if preloaded
+        
+        img.onload = () => {
+          if (!resolved) {
+            resolved = true
+            clearTimeout(timeout)
+            // Image loaded - resolve immediately (decode happens automatically)
+            resolve(img)
+          }
+        }
+        
+        img.onerror = () => {
+          if (!resolved) {
+            resolved = true
+            clearTimeout(timeout)
+            console.error(`[DEBUG] Failed to load image ${index + 1}: ${path}`)
+            reject(new Error(`Failed to load image ${index + 1}: ${path}`))
+          }
+        }
+        
+        // Force eager loading (no lazy loading)
+        img.loading = 'eager'
+        
+        // Start loading
         img.src = path
       })
     })
 
-    const originalImages = await Promise.all(imagePromises)
+    // Load all images with error handling
+    // If some images fail, we'll still try to proceed with what we have
+    const originalImages = await Promise.allSettled(imagePromises).then((results) => {
+      const loaded: HTMLImageElement[] = []
+      const errors: string[] = []
+      
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          loaded.push(result.value)
+        } else {
+          errors.push(`Image ${index + 1} (${imagePaths[index]}): ${result.reason}`)
+        }
+      })
+      
+      if (errors.length > 0) {
+        console.error('[DEBUG] Some images failed to load:', errors)
+      }
+      
+      if (loaded.length === 0) {
+        throw new Error('No images could be loaded')
+      }
+      
+      if (loaded.length < imagePaths.length) {
+        console.warn(`[DEBUG] Only ${loaded.length} of ${imagePaths.length} images loaded`)
+      }
+      
+      return loaded
+    })
 
     const images = [...menuImages, ...originalImages]
 

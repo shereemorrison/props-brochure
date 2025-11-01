@@ -309,11 +309,11 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
           width: '100vw',
           height: '100vh',
           overflow: 'hidden',
-          zIndex: 1,
+          zIndex: 0, // Behind curtains (curtains are z-index 2 within loading screen z-index 20)
           touchAction: 'none',
-          opacity: canvasOpacity,
+          opacity: 1, // Always visible - opacity controlled by canvasOpacity only affects interaction
           pointerEvents: canvasOpacity > 0 ? 'auto' : 'none',
-          visibility: canvasOpacity > 0 ? 'visible' : 'hidden'
+          backgroundColor: '#000', // Black background so canvas area is visible from start
         }}
       >
         <canvas

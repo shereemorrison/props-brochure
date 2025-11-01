@@ -17,12 +17,8 @@
   min-height: 100dvh;
   z-index: 10;
   position: relative;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-}
-
-#app.loaded {
-  opacity: 1;
+  opacity: 1; // Always visible - visibility controlled by loading screen z-index
+  // Removed transition and .loaded class - not needed since loading screen handles visibility
 }
 
 .contain {
@@ -42,7 +38,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1;
+  z-index: 0; // Behind curtains (curtains are z-index 2 within loading screen z-index 20)
   overflow: hidden;
 }
 

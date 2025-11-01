@@ -14,17 +14,86 @@ import ActThree from "./pages/ActThree";
 import ActFour from "./pages/ActFour";
 
 function App() {
-  const [showMainPage, setShowMainPage] = useState(false);
+  // Always render the main page from the start - it's hidden behind curtains
+  const [showMainPage, setShowMainPage] = useState(true);
   const [loadingHidden, setLoadingHidden] = useState(false);
   const loading = useRef<HTMLDivElement>(null);
   const landingPageRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Preload all WebGL images immediately when app starts
+  // This ensures images are ready before WebGLProgram initializes, especially important on mobile
+  useEffect(() => {
+    const imagePaths = [
+      "/pages/p1.jpg",
+      "/pages/p2.jpg",
+      "/pages/p3.jpg",
+      "/pages/p4.jpg",
+      "/pages/p5.jpg",
+      "/pages/p6.jpg",
+      "/pages/p7.jpg",
+      "/pages/p8.jpg",
+      "/pages/p9.jpg",
+      "/pages/p10.jpg",
+      "/pages/p11.jpg",
+      "/pages/p12.jpg",
+      "/pages/p13.jpg",
+    ];
+
+    console.log("[DEBUG] Preloading WebGL images...");
+    
+    // Preload all images with aggressive loading (no lazy loading)
+    const preloadPromises = imagePaths.map((path, index) => {
+      return new Promise<void>((resolve) => {
+        const img = new Image();
+        let resolved = false;
+        
+        // Set timeout for mobile networks
+        const timeout = setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            console.warn(`[DEBUG] Image ${index + 1} (${path}) timed out during preload`);
+            resolve(); // Resolve anyway to not block
+          }
+        }, 5000); // 5 second timeout - should be fast if preloaded via HTML
+        
+        img.onload = () => {
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeout);
+            // Image loaded - resolve immediately
+            resolve();
+          }
+        };
+        
+        img.onerror = () => {
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeout);
+            console.error(`[DEBUG] Failed to preload image ${index + 1}: ${path}`);
+            resolve(); // Resolve anyway to not block
+          }
+        };
+        
+        // Force eager loading (no lazy loading)
+        img.loading = 'eager';
+        img.src = path;
+      });
+    });
+
+    Promise.all(preloadPromises).then(() => {
+      console.log("[DEBUG] All WebGL images preloaded");
+    }).catch((error) => {
+      console.error("[DEBUG] Error during image preload:", error);
+    });
+  }, []); // Run immediately on mount
+
   // Handle refresh - always redirect to home (menu)
   useEffect(() => {
-    // Only redirect if we're not already on the home page and showMainPage hasn't been set yet
-    if (location.pathname !== '/' && !showMainPage) {
+    // Only redirect if we're not already on the home page
+    // Note: showMainPage is now always true from start, so wrapper is always rendered
+    if (location.pathname !== '/') {
       console.log("[DEBUG] App: Redirecting to home from", location.pathname);
       navigate('/', { replace: true });
     }
@@ -150,10 +219,9 @@ function App() {
 
       // Start loading WebGLProgram immediately (at 0s) behind curtains
       // This gives it plenty of time to initialize and render before curtains split
-      tl.call(() => {
-        console.log("[DEBUG] Starting WebGLProgram loading behind curtains at 0s");
-        setShowMainPage(true);
-      }, [], 0); // Start immediately
+      // WebGLProgram is already rendered from the start (showMainPage starts as true)
+      // It's just hidden behind the curtains until they split
+      console.log("[DEBUG] WebGLProgram should already be loading behind curtains at 0s");
 
       // Props Theatre letters transition off - starts 0.2s after lights/camera/action ends
       // Action ends at 2.9s, so transition starts at 3.1s
@@ -211,9 +279,11 @@ function App() {
         onComplete: () => console.log("[DEBUG] Right curtain animation completed")
       }, 3.9) // Same time as Props Theatre transition completes
       // Make background transparent immediately when curtains split
+      // Lower z-index so it doesn't block the page behind
       // This reveals WebGLProgram behind while curtains are still animating off screen
       .to(".loadings", {
         backgroundColor: "rgba(0, 0, 0, 0)",
+        zIndex: -1, // Put below wrapper (z-index 0) so page is immediately visible
         duration: 0.2,
         ease: "power2.out",
       }, 3.9) // Same time as curtains split
