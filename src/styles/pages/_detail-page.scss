@@ -108,19 +108,25 @@
     }
     
     .cast-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, clamp(200px, 30vw, 250px)), 1fr));
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(max(150px, 20%), 1fr)) !important;
       gap: clamp(0.75rem, 2vw, 1rem);
       
-      // On smaller screens, ensure multiple columns with smaller minimum
+      // On tablet, ensure multiple columns
       @media (max-width: 768px) {
-        grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 35vw, 180px), 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
         gap: clamp(0.5rem, 1.5vw, 0.75rem);
       }
       
+      // On mobile, ensure at least 2 columns
       @media (max-width: 480px) {
-        grid-template-columns: repeat(auto-fit, minmax(clamp(100px, 30vw, 150px), 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
         gap: clamp(0.4rem, 1.2vw, 0.6rem);
+      }
+      
+      // For very narrow screens, use 2 columns minimum
+      @media (max-width: 600px) {
+        grid-template-columns: repeat(auto-fit, minmax(max(120px, calc(50% - 0.5rem)), 1fr)) !important;
       }
     }
     

@@ -59,14 +59,38 @@ export default function DayPage() {
               </div>
             </div>
           ))}
+          
+          {dayData.hasThankYou && (
+            <div 
+              className="thank-you-card"
+              onClick={() => navigate('/thank-you')}
+              style={{
+                position: 'relative',
+                width: '100%',
+                aspectRatio: '2 / 1',
+                overflow: 'hidden',
+                borderRadius: 'clamp(10px, 2vw, 16px)',
+                border: '2px solid rgba(255, 215, 0, 0.5)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+                maxWidth: 'clamp(140px, 25vw, 220px)',
+                minWidth: 'clamp(100px, 20vw, 140px)',
+                margin: '0 auto',
+                backgroundColor: 'rgba(255, 215, 0, 0.05)',
+                justifySelf: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                cursor: 'pointer'
+              }}
+            >
+              <div className="stage-card-content">
+                <h2 style={{ color: '#ffffff', fontFamily: 'var(--font-heading)', margin: 0 }}>Thank You</h2>
+              </div>
+            </div>
+          )}
         </div>
-
-        {dayData.hasThankYou && (
-          <div className="thank-you-section">
-            <h2>Thank You</h2>
-            <p>Thank you to staff and helpers</p>
-          </div>
-        )}
       </div>
     </div>
   );

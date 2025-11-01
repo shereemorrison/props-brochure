@@ -7,6 +7,7 @@ import DayPage from "./pages/DayPage";
 import StagePage from "./pages/StagePage";
 import Credits from "./pages/Credits";
 import Contact from "./pages/Contact";
+import ThankYou from "./pages/ThankYou";
 // Legacy routes (kept for backwards compatibility)
 import ActOne from "./pages/ActOne";
 import ActTwo from "./pages/ActTwo";
@@ -372,6 +373,7 @@ function App() {
             <Route path="/credits" element={<Credits />} />
             <Route path="/acknowledgements" element={<Credits />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/thank-you" element={<ThankYou />} />
           </Routes>
         </div>
       )}
