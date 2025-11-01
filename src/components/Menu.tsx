@@ -113,12 +113,51 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
     };
   }, [isVisible, imagesLoaded, skipAnimation]);
 
+  const [touchStartMap, setTouchStartMap] = useState<Map<number, { y: number; time: number }>>(new Map());
+  
   const handleItemClick = (index: number, route: string) => {
     if (onPageClick) {
       onPageClick(index);
     } else {
       navigate(route);
     }
+  };
+  
+  const handleTouchStart = (e: React.TouchEvent, index: number) => {
+    e.stopPropagation();
+    const touch = e.touches[0];
+    setTouchStartMap(prev => {
+      const newMap = new Map(prev);
+      newMap.set(index, { y: touch.clientY, time: Date.now() });
+      return newMap;
+    });
+  };
+  
+  const handleTouchEnd = (e: React.TouchEvent, index: number, route: string) => {
+    e.stopPropagation();
+    const touchStart = touchStartMap.get(index);
+    
+    if (!touchStart) {
+      // No touch start recorded, treat as potential scroll
+      return;
+    }
+    
+    const touch = e.changedTouches[0];
+    const deltaY = Math.abs(touch.clientY - touchStart.y);
+    const deltaTime = Date.now() - touchStart.time;
+    
+    // Only trigger click if movement was small (< 10px) and quick (< 300ms)
+    // This prevents clicks when user is scrolling
+    if (deltaY < 10 && deltaTime < 300) {
+      handleItemClick(index, route);
+    }
+    
+    // Clear touch start
+    setTouchStartMap(prev => {
+      const newMap = new Map(prev);
+      newMap.delete(index);
+      return newMap;
+    });
   };
 
   if (!isVisible) return null;
@@ -133,18 +172,16 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
         left: 0,
         width: '100vw',
         height: '100vh',
-        minHeight: '100vh',
         overflowY: 'auto',
         overflowX: 'hidden',
         zIndex: 100,
         background: 'radial-gradient(ellipse at center, #1a1a1a 0%, #000000 100%)',
         WebkitOverflowScrolling: 'touch',
-        // Ensure proper scrolling on mobile
         overscrollBehavior: 'contain'
       }}
     >
-      {/* Header - Matching Landing Page */}
-      <Header fixed={true} />
+      {/* Header - Matching Landing Page - scrolls with content */}
+      <Header fixed={false} />
 
       {/* Content */}
       <div
@@ -152,13 +189,13 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
         style={{
           position: 'relative',
           zIndex: 2,
-          minHeight: '100vh',
+          minHeight: 'calc(100vh - clamp(84px, 15vw, 144px) - clamp(2rem, 3vw, 4rem))', // Account for header height
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start', // Allow natural scrolling on mobile
           padding: 'clamp(2rem, 6vh, 4rem) clamp(1rem, 3vw, 3rem)',
-          paddingTop: 'clamp(8rem, 12vh, 10rem)', // Extra padding for header
+          paddingTop: 'clamp(2rem, 6vh, 4rem)', // Normal padding since header scrolls
           paddingBottom: 'clamp(4rem, 8vh, 6rem)', // Extra padding at bottom for mobile scrolling
           boxSizing: 'border-box',
           // Ensure content can grow beyond viewport
@@ -172,10 +209,8 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
               key={item.id}
               ref={el => { itemsRef.current[index] = el as HTMLDivElement }}
               onClick={() => handleItemClick(index, item.route)}
-              onTouchEnd={(e) => {
-                e.stopPropagation();
-                handleItemClick(index, item.route);
-              }}
+              onTouchStart={(e) => handleTouchStart(e, index)}
+              onTouchEnd={(e) => handleTouchEnd(e, index, item.route)}
               className="menu-item-card"
               style={{
                 position: 'relative',

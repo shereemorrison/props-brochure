@@ -21,8 +21,7 @@
     bottom: 0;
     width: 50%;
     height: 100%;
-    background-color: #000; // Black background to prevent flash before image loads
-    // background-image set via inline style in JSX using imported image
+    // background-image set via inline style in JSX using imported image (bundled, loads immediately)
     background-size: cover;
     background-repeat: no-repeat;
     will-change: transform;

@@ -1,6 +1,6 @@
 // Landing Page Header & Footer
 .landing-header {
-  position: absolute;
+  position: relative; // Changed from absolute - scrolls with content
   top: 0;
   left: 0;
   width: 100%;
@@ -12,6 +12,14 @@
   pointer-events: none;
   box-sizing: border-box;
   gap: clamp(0.5rem, 2vw, 1rem);
+  
+  // When fixed prop is true, make it fixed
+  &.header-fixed {
+    position: fixed;
+    top: 0;
+    background: radial-gradient(ellipse at center, rgba(26, 26, 26, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%);
+    backdrop-filter: blur(10px);
+  }
   
   .header-title {
     font-size: clamp(1.25rem, 4vw, 2rem);
