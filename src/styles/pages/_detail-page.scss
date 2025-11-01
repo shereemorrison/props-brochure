@@ -1,19 +1,17 @@
 // Detail Page Styles
 .detail-page {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
   background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
   z-index: 30;
   padding: clamp(0.75rem, 2vw, 2rem);
-  overflow-y: auto;
-  overflow-x: hidden;
+  padding-bottom: clamp(2rem, 5vh, 4rem); // Extra padding at bottom to ensure content is scrollable
   box-sizing: border-box;
   
   @media (max-width: 768px) {
     padding: clamp(0.5rem, 1.5vw, 1rem);
+    padding-bottom: clamp(2rem, 5vh, 4rem);
   }
   
   .back-button {
@@ -53,11 +51,10 @@
   .detail-content {
     max-width: min(800px, 95vw);
     margin: 0 auto;
-    padding-top: clamp(3rem, 8vh, 4rem);
+    padding-top: clamp(4rem, 8vh, 5rem); // Extra padding to account for back button
     padding-bottom: clamp(1.5rem, 4vh, 2rem);
     padding-left: clamp(0.5rem, 2vw, 1rem);
     padding-right: clamp(0.5rem, 2vw, 1rem);
-    min-height: calc(100vh - clamp(4rem, 12vh, 8rem));
     box-sizing: border-box;
     width: 100%;
     
