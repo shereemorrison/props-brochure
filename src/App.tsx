@@ -22,9 +22,15 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Preload all WebGL images immediately when app starts
-  // This ensures images are ready before WebGLProgram initializes, especially important on mobile
+  // Preload curtain image first (highest priority) to prevent flash on mobile
+  // Then preload all WebGL images
   useEffect(() => {
+    // Preload curtain image with highest priority
+    const curtainImg = new Image();
+    curtainImg.loading = 'eager';
+    curtainImg.src = '/curtains/manos-gkikas-pPA5ActWLLI-unsplash.jpg';
+    console.log("[DEBUG] Preloading curtain image...");
+    
     const imagePaths = [
       "/pages/p1.jpg",
       "/pages/p2.jpg",

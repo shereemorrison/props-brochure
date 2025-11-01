@@ -9,6 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
   
+  <!-- Preload critical curtain image immediately - highest priority to prevent flash -->
+  <link rel="preload" as="image" href="/curtains/manos-gkikas-pPA5ActWLLI-unsplash.jpg" fetchpriority="high">
+  
   <!-- Preload critical WebGL images immediately - no lazy loading -->
   <link rel="preload" as="image" href="/pages/p1.jpg" fetchpriority="high">
   <link rel="preload" as="image" href="/pages/p2.jpg" fetchpriority="high">

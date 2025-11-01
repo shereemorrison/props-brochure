@@ -84,6 +84,7 @@ export default function StagePage() {
   const imagesRef = useRef<(HTMLDivElement | null)[]>([]);
   const [imagePaths, setImagePaths] = useState<string[]>([]);
   const [imagesLoading, setImagesLoading] = useState(true);
+  const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   // Find the stage data from all days and also find which day it belongs to
   let stageData = null;
@@ -120,6 +121,7 @@ export default function StagePage() {
       console.log(`Setting ${limitedImages.length} images to display`);
       setImagePaths(limitedImages);
       setImagesLoading(false);
+      
     }).catch((error) => {
       console.error('Error loading images:', error);
       setImagesLoading(false);
@@ -180,14 +182,30 @@ export default function StagePage() {
     });
 
     // Story sections - animate as they come into view
-    sectionRefs.current.forEach((section) => {
+    sectionRefs.current.forEach((section, index) => {
       if (!section) return;
+
+      // Set initial state
+      gsap.set(section, {
+        opacity: 0,
+        y: 50,
+        scale: 0.95
+      });
 
       ScrollTrigger.create({
         trigger: section,
         start: 'top 75%',
-        toggleActions: 'play none none none',
+        toggleActions: 'play none none reverse',
         onEnter: () => {
+          gsap.to(section, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1,
+            ease: 'power2.out'
+          });
+        },
+        onEnterBack: () => {
           gsap.to(section, {
             opacity: 1,
             y: 0,
@@ -197,14 +215,30 @@ export default function StagePage() {
           });
         }
       });
-
-      // Set initial state
-      gsap.set(section, {
-        opacity: 0,
-        y: 50,
-        scale: 0.95
-      });
     });
+    
+    // After images load, refresh ScrollTrigger to ensure cast section triggers work
+    // Also check if cast section is already visible and make it visible
+    if (!imagesLoading) {
+      refreshTimerRef.current = setTimeout(() => {
+        ScrollTrigger.refresh();
+        const castSection = sectionRefs.current[2];
+        if (castSection) {
+          const rect = castSection.getBoundingClientRect();
+          const isInView = rect.top < window.innerHeight && rect.bottom > 0;
+          if (isInView) {
+            gsap.to(castSection, {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 1,
+              ease: 'power2.out',
+              immediateRender: false
+            });
+          }
+        }
+      }, 500);
+    }
 
     // Animate images as they come into view
     imagesRef.current.forEach((imgContainer, index) => {
@@ -245,6 +279,9 @@ export default function StagePage() {
 
     // Cleanup
     return () => {
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+      }
       ScrollTrigger.getAll().forEach(trigger => {
         if (trigger.vars.trigger === storyContainerRef.current || 
             trigger.vars.trigger === blurbRef.current ||
@@ -254,7 +291,7 @@ export default function StagePage() {
         }
       });
     };
-  }, { dependencies: [stageData, imagePaths] });
+  }, { dependencies: [stageData, imagePaths, imagesLoading] });
 
   return (
     <div className="detail-page">
@@ -326,14 +363,25 @@ export default function StagePage() {
 
         <section className="story-section cast-section" ref={el => { sectionRefs.current[2] = el as HTMLDivElement }}>
           <h2>Cast & Crew</h2>
-          <div className="cast-grid">
-            {stageData.cast.map((member, i) => (
-              <div key={i} className="cast-member-card">
-                <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.name}</div>
-                <div style={{ color: '#ffffff', opacity: 0.8, fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.role}</div>
-              </div>
-            ))}
-          </div>
+          <p style={{ 
+            color: 'rgba(255, 255, 255, 0.7)', 
+            fontFamily: "Bungee, 'Playfair Display', serif",
+            fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+            marginTop: 'clamp(1rem, 2vh, 1.5rem)',
+            marginBottom: 'clamp(1rem, 2vh, 1.5rem)'
+          }}>
+            Performer names and roles will go here
+          </p>
+          {stageData.cast.length > 0 && (
+            <div className="cast-grid">
+              {stageData.cast.map((member, i) => (
+                <div key={i} className="cast-member-card">
+                  <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.name}</div>
+                  <div style={{ color: '#ffffff', opacity: 0.8, fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.role}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {stageData.awards.length > 0 && (

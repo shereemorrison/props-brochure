@@ -21,6 +21,7 @@
     bottom: 0;
     width: 50%;
     height: 100%;
+    background-color: #000; // Black background to prevent flash before image loads
     background-image: url('/curtains/manos-gkikas-pPA5ActWLLI-unsplash.jpg');
     background-size: cover;
     background-repeat: no-repeat;

@@ -11,10 +11,10 @@ interface MenuProps {
 }
 
 const menuItems = [
-  { id: 'monday-24th', title: 'Mon', subtitle: '24th', route: '/day/monday-24th', year: 2026, background: '/theatre/theatre1.webp' },
-  { id: 'tuesday-25th', title: 'Tues', subtitle: '25th', route: '/day/tuesday-25th', year: 2026, background: '/theatre/theatre2.webp' },
-  { id: 'wednesday-26th', title: 'Wednes', subtitle: '26th', route: '/day/wednesday-26th', year: 2026, background: '/theatre/theatre3.webp' },
-  { id: 'thursday-27th', title: 'Thurs', subtitle: '27th', route: '/day/thursday-27th', year: 2026, background: '/theatre/theatre4.webp' },
+  { id: 'monday-24th', title: 'Mon', subtitle: '24th', route: '/day/monday-24th', year: 2025, background: '/theatre/theatre1.webp' },
+  { id: 'tuesday-25th', title: 'Tues', subtitle: '25th', route: '/day/tuesday-25th', year: 2025, background: '/theatre/theatre2.webp' },
+  { id: 'wednesday-26th', title: 'Wednes', subtitle: '26th', route: '/day/wednesday-26th', year: 2025, background: '/theatre/theatre3.webp' },
+  { id: 'thursday-27th', title: 'Thurs', subtitle: '27th', route: '/day/thursday-27th', year: 2025, background: '/theatre/theatre4.webp' },
   { id: 'credits', title: 'Credits', subtitle: '', route: '/acknowledgements', year: null, background: '/theatre/theatre5.webp' },
   { id: 'contact', title: 'Contact', subtitle: '', route: '/contact', year: null, background: '/theatre/theatre6.webp' },
 ];
