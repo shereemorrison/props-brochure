@@ -34,7 +34,7 @@ function DetailPage({ performance, onBack }: DetailPageProps) {
           <h2>Cast & Crew</h2>
           <p style={{ 
             color: 'rgba(255, 255, 255, 0.7)', 
-            fontFamily: 'Bungee, "Playfair Display", serif',
+            fontFamily: '"Oswald", sans-serif',
             fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
             marginTop: 'clamp(1rem, 2vh, 1.5rem)'
           }}>
@@ -51,10 +51,10 @@ function DetailPage({ performance, onBack }: DetailPageProps) {
                 border: '1px solid rgba(255, 215, 0, 0.3)',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
               }}>
-                <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: 'Bungee, "Playfair Display", serif' }}>
+                <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: '"Oswald", sans-serif' }}>
                     {member.name}
                 </div>
-                <div style={{ color: '#ffffff', opacity: '0.8', fontFamily: 'Bungee, "Playfair Display", serif' }}>
+                <div style={{ color: '#ffffff', opacity: '0.8', fontFamily: '"Oswald", sans-serif' }}>
                   {member.role}
                 </div>
               </div>
@@ -79,10 +79,10 @@ function DetailPage({ performance, onBack }: DetailPageProps) {
                 <div style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', marginBottom: 'clamp(0.25rem, 1vw, 0.5rem)' }}>
                   {award.icon}
                 </div>
-                <div style={{ fontWeight: 'bold', fontSize: 'clamp(1rem, 2.5vw, 1.2rem)', marginBottom: 'clamp(0.25rem, 1vw, 0.5rem)', fontFamily: 'Bungee, "Playfair Display", serif' }}>
+                <div style={{ fontWeight: 'bold', fontSize: 'clamp(1rem, 2.5vw, 1.2rem)', marginBottom: 'clamp(0.25rem, 1vw, 0.5rem)', fontFamily: '"Oswald", sans-serif' }}>
                   {award.name}
                 </div>
-                <div style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)', opacity: '0.8', fontFamily: 'Bungee, "Playfair Display", serif' }}>
+                <div style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)', opacity: '0.8', fontFamily: '"Oswald", sans-serif' }}>
                   {award.recipient}
                 </div>
               </div>

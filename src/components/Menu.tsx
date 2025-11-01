@@ -13,7 +13,7 @@ interface MenuProps {
 const menuItems = [
   { id: 'monday-24th', title: 'Mon', subtitle: '24th', route: '/day/monday-24th', year: 2025, background: '/theatre/theatre1.webp' },
   { id: 'tuesday-25th', title: 'Tues', subtitle: '25th', route: '/day/tuesday-25th', year: 2025, background: '/theatre/theatre2.webp' },
-  { id: 'wednesday-26th', title: 'Wednes', subtitle: '26th', route: '/day/wednesday-26th', year: 2025, background: '/theatre/theatre3.webp' },
+  { id: 'wednesday-26th', title: 'Wed', subtitle: '26th', route: '/day/wednesday-26th', year: 2025, background: '/theatre/theatre3.webp' },
   { id: 'thursday-27th', title: 'Thurs', subtitle: '27th', route: '/day/thursday-27th', year: 2025, background: '/theatre/theatre4.webp' },
   { id: 'credits', title: 'Gallery', subtitle: '', route: '/acknowledgements', year: 2025, background: '/theatre/theatre5.webp' },
   { id: 'contact', title: 'Contact', subtitle: '', route: '/contact', year: null, background: '/theatre/theatre6.webp' },
@@ -248,8 +248,9 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                 cursor: 'pointer',
                 overflow: 'hidden',
                 borderRadius: 'clamp(10px, 2vw, 16px)',
+                border: '2px solid rgba(255, 215, 0, 0.5)',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
                 maxWidth: 'clamp(140px, 25vw, 220px)',
                 minWidth: 'clamp(120px, 20vw, 140px)',
                 margin: '0 auto',
@@ -263,6 +264,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                   scale: 1.05,
                   y: -4,
                   boxShadow: '0 8px 30px rgba(255, 215, 0, 0.4)',
+                  borderColor: 'rgba(255, 215, 0, 1)',
                   duration: 0.3,
                   ease: 'power2.out'
                 });
@@ -272,6 +274,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                   scale: 1,
                   y: 0,
                   boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                  borderColor: 'rgba(255, 215, 0, 0.5)',
                   duration: 0.3,
                   ease: 'power2.out'
                 });
@@ -301,21 +304,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                 />
               )}
 
-              {/* Dark overlay for text readability */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%)',
-                  zIndex: 1,
-                  opacity: 0.6
-                }}
-              />
-
-              {/* Content overlay */}
+              {/* Content overlay - no dark background, just text container */}
               <div
                 style={{
                   position: 'absolute',
@@ -323,14 +312,13 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                   left: 0,
                   right: 0,
                   padding: 'clamp(0.75rem, 2vw, 1.25rem)',
-                  zIndex: 2,
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)'
+                  zIndex: 2
                 }}
               >
                 <h2
                   style={{
                     fontSize: 'clamp(1.1rem, 3vw, 1.6rem)',
-                    fontFamily: '"Bungee", "Playfair Display", serif',
+                    fontFamily: 'var(--font-heading), "Oswald", sans-serif',
                     fontWeight: 700,
                     color: '#ffd700',
                     margin: '0 0 clamp(0.25rem, 1vw, 0.5rem) 0',
@@ -346,7 +334,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                   <div
                     style={{
                       fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)',
-                      fontFamily: '"Bungee", "Playfair Display", serif',
+                      fontFamily: 'var(--font-heading), "Oswald", sans-serif',
                       color: 'rgba(255, 255, 255, 0.9)',
                       textAlign: 'center',
                       textShadow: '0 1px 4px rgba(0, 0, 0, 0.8)',
@@ -360,7 +348,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                   <div
                     style={{
                       fontSize: 'clamp(0.85rem, 2.2vw, 1.1rem)',
-                      fontFamily: '"Bungee", "Playfair Display", serif',
+                      fontFamily: 'var(--font-heading), "Oswald", sans-serif',
                       color: 'rgba(255, 255, 255, 0.7)',
                       textAlign: 'center',
                       textShadow: '0 1px 4px rgba(0, 0, 0, 0.8)',

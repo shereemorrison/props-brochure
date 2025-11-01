@@ -94,6 +94,9 @@ export default class Program {
       this.createMaterial()
       this.createMeshes()
 
+      // Material and meshes are ready - dispatch event for mobile timing
+      window.dispatchEvent(new CustomEvent('webglMaterialReady'));
+
       let anim: gsap.core.Timeline | null = null
 
       if (shouldSkipAnimation) {
@@ -138,6 +141,16 @@ export default class Program {
           window.addEventListener("wheel", this.onWheel.bind(this))
           this.addTouchListeners()
         })
+        
+        // Check if animation start event already fired - if so, start now
+        // This handles the case where curtains split before texture loaded (mobile)
+        setTimeout(() => {
+          // Check if event was already fired (stored in window)
+          if ((window as any).__webglAnimationEventFired) {
+            console.log('[DEBUG] Program: Animation event was already fired, starting now');
+            this.startAnimation();
+          }
+        }, 100);
       }
     })
   }
@@ -168,7 +181,7 @@ export default class Program {
     // ctx.fillText(title, 256, 180)
 
     // Add subtitle
-    ctx.font = '20px Bungee'
+    ctx.font = '20px Oswald'
     ctx.fillStyle = '#cccccc'
     ctx.textAlign = 'center'
     ctx.fillText('Props Theatre', 256, 400)

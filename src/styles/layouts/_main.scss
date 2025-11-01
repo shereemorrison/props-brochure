@@ -28,7 +28,7 @@
 }
 
 .wrapper {
-  background-color: rgb(19, 19, 19); // Match webgl background
+  background-color: transparent; // Transparent so WebGL canvas shows through
   height: 100vh;
   width: 100vw;
   color: black;
@@ -38,7 +38,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 0; // Behind curtains (curtains are z-index 2 within loading screen z-index 20)
+  z-index: 0; // Behind WebGL canvas and curtains
   overflow: hidden;
 }
 

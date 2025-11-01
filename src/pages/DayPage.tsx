@@ -36,10 +36,27 @@ export default function DayPage() {
               key={stage.id} 
               className="stage-card"
               onClick={() => handleStageClick(stage.id)}
+              style={{
+                position: 'relative',
+                width: '100%',
+                aspectRatio: '2 / 1',
+                cursor: 'pointer',
+                overflow: 'hidden',
+                borderRadius: 'clamp(10px, 2vw, 16px)',
+                border: '2px solid rgba(255, 215, 0, 0.5)',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+                maxWidth: 'clamp(140px, 25vw, 220px)',
+                minWidth: 'clamp(100px, 20vw, 140px)',
+                margin: '0 auto',
+                backgroundColor: 'rgba(255, 215, 0, 0.05)',
+                justifySelf: 'center'
+              }}
             >
-              <h2>{stage.stageNumber}</h2>
-              <h3>{stage.title}</h3>
-              <p>{stage.summary}</p>
+              <div className="stage-card-content">
+                <h2>{stage.stageNumber}</h2>
+                <h3>{stage.title}</h3>
+              </div>
             </div>
           ))}
         </div>

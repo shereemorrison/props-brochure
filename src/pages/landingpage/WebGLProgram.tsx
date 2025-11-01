@@ -71,8 +71,39 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       alpha: true,
-      antialias: true
+      antialias: true,
+      powerPreference: 'high-performance' // Help with mobile performance
     });
+    
+    // Check if WebGL context was created successfully
+    const gl = renderer.getContext();
+    if (!gl) {
+      console.error("[DEBUG] WebGLProgram: Failed to create WebGL context!");
+      console.error("[DEBUG] This might be a simulator limitation. WebGL often doesn't work in mobile simulators.");
+      console.error("[DEBUG] Please test on a real device or try a different browser simulator.");
+      // Show menu immediately if WebGL fails (graceful degradation)
+      setShowMenu(true);
+      return;
+    }
+    
+    // Check WebGL version and capabilities
+    const webglInfo = {
+      renderer: gl.getParameter(gl.RENDERER),
+      version: gl.getParameter(gl.VERSION),
+      vendor: gl.getParameter(gl.VENDOR),
+      shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+      maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+      maxViewportDims: gl.getParameter(gl.MAX_VIEWPORT_DIMS),
+    };
+    
+    console.log("[DEBUG] WebGLProgram: WebGL context created successfully", webglInfo);
+    
+    // Warn if using software rendering (common in simulators)
+    if (webglInfo.renderer.toLowerCase().includes('software') || 
+        webglInfo.renderer.toLowerCase().includes('swiftshader')) {
+      console.warn("[DEBUG] WARNING: Using software WebGL rendering (likely simulator). Performance will be poor and may not work correctly.");
+      console.warn("[DEBUG] Please test on a real device for accurate results.");
+    }
     // @ts-ignore - Raycaster constructor doesn't need arguments in Three.js
     const raycaster = new THREE.Raycaster();
     const debug = new GUI();
@@ -107,24 +138,72 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
     // Listen for custom event to start animation when curtains split
     const handleStartAnimation = () => {
       console.log("[DEBUG] WebGLProgram: Received startAnimation event");
-      // Use programRef to ensure we have the latest program instance
-      if (programRef.current && programRef.current.animationTimeline) {
-        if (programRef.current.animationTimeline.paused()) {
-          programRef.current.startAnimation();
-        } else {
-          console.log("[DEBUG] WebGLProgram: Animation already running");
-        }
-      } else {
-        console.log("[DEBUG] WebGLProgram: Program or timeline not ready yet, will retry");
-        // Retry after a short delay if program isn't ready
-        setTimeout(() => {
-          if (programRef.current && programRef.current.animationTimeline && programRef.current.animationTimeline.paused()) {
-            programRef.current.startAnimation();
+      
+      // Robust retry mechanism for mobile - multiple attempts with increasing delays
+      const tryStartAnimation = (attempt = 1, maxAttempts = 10) => {
+        console.log(`[DEBUG] WebGLProgram: Attempt ${attempt} to start animation`);
+        
+        if (programRef.current && programRef.current.animationTimeline) {
+          // Check if material is also ready (ensure texture is loaded)
+          if (programRef.current.material && programRef.current.material.uniforms) {
+            if (programRef.current.animationTimeline.paused()) {
+              console.log("[DEBUG] WebGLProgram: Starting animation");
+              programRef.current.startAnimation();
+              return true;
+            } else {
+              console.log("[DEBUG] WebGLProgram: Animation already running");
+              return true;
+            }
+          } else {
+            console.log("[DEBUG] WebGLProgram: Material not ready yet");
           }
-        }, 100);
-      }
+        } else {
+          console.log("[DEBUG] WebGLProgram: Program or timeline not ready yet");
+        }
+        
+        // Retry with exponential backoff (50ms, 100ms, 200ms, 400ms, 500ms, then 500ms each)
+        if (attempt < maxAttempts) {
+          const delay = attempt <= 4 ? 50 * Math.pow(2, attempt - 1) : 500;
+          setTimeout(() => {
+            tryStartAnimation(attempt + 1, maxAttempts);
+          }, delay);
+        } else {
+          console.error("[DEBUG] WebGLProgram: Failed to start animation after all retries");
+          // Last resort: try to start anyway if program exists
+          if (programRef.current && programRef.current.animationTimeline) {
+            try {
+              programRef.current.startAnimation();
+            } catch (error) {
+              console.error("[DEBUG] WebGLProgram: Error starting animation:", error);
+            }
+          }
+        }
+        
+        return false;
+      };
+      
+      tryStartAnimation();
+      
+      // Mark that the event was fired (for program.ts to check if it loads late)
+      (window as any).__webglAnimationEventFired = true;
     };
     window.addEventListener('startWebGLAnimation', handleStartAnimation);
+    
+    // Also listen for material ready event as a backup trigger on mobile
+    const handleMaterialReady = () => {
+      console.log("[DEBUG] WebGLProgram: Material ready event received");
+      // Small delay to ensure timeline is also ready
+      setTimeout(() => {
+        if (programRef.current && programRef.current.animationTimeline && programRef.current.animationTimeline.paused()) {
+          // Only start if event was already fired (curtains already split)
+          if ((window as any).__webglAnimationEventFired) {
+            console.log("[DEBUG] WebGLProgram: Material ready, starting delayed animation");
+            programRef.current.startAnimation();
+          }
+        }
+      }, 200);
+    };
+    window.addEventListener('webglMaterialReady', handleMaterialReady);
 
     // ============================================
     // RESPONSIVE RESIZE HANDLER with ResizeObserver
@@ -225,13 +304,19 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
     const animate = () => {
       animationIdRef.current = requestAnimationFrame(animate);
 
-      renderer.render(scene, camera);
-      program.render();
-      
-      // Log when animation starts
-      if (!animationStarted && program.material && program.material.uniforms.uProgress.value > 0) {
-        animationStarted = true;
-        console.log("[DEBUG] WebGLProgram: Animation started, uProgress:", program.material.uniforms.uProgress.value);
+      // Only render if material is ready
+      if (program.material && program.material.uniforms) {
+        renderer.render(scene, camera);
+        program.render();
+        
+        // Log when animation starts
+        if (!animationStarted && program.material.uniforms.uProgress.value > 0) {
+          animationStarted = true;
+          console.log("[DEBUG] WebGLProgram: Animation started, uProgress:", program.material.uniforms.uProgress.value);
+        }
+      } else {
+        // Material not ready yet - still render empty scene to keep animation loop running
+        renderer.render(scene, camera);
       }
       
       // STEP 2: FADE OUT (triggers when rotation completes)
@@ -286,6 +371,10 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
 
       window.removeEventListener('resize', windowResizeHandler);
       window.removeEventListener('startWebGLAnimation', handleStartAnimation);
+      window.removeEventListener('webglMaterialReady', handleMaterialReady);
+      
+      // Clean up global flag
+      delete (window as any).__webglAnimationEventFired;
 
       if (canvasRef.current) {
         canvasRef.current.removeEventListener('pointerdown', handlePointerDown);
@@ -309,11 +398,11 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
           width: '100vw',
           height: '100vh',
           overflow: 'hidden',
-          zIndex: 0, // Behind curtains (curtains are z-index 2 within loading screen z-index 20)
+          zIndex: 1, // Above wrapper (z-index 0) but below curtains during loading
           touchAction: 'none',
           opacity: 1, // Always visible - opacity controlled by canvasOpacity only affects interaction
           pointerEvents: canvasOpacity > 0 ? 'auto' : 'none',
-          backgroundColor: '#000', // Black background so canvas area is visible from start
+          backgroundColor: 'transparent', // Transparent so we see the canvas content, not black
         }}
       >
         <canvas

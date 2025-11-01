@@ -114,12 +114,19 @@ export default function StagePage() {
     sectionRefs.current.forEach((section, index) => {
       if (!section) return;
 
+      // Check if section is already in viewport
+      const rect = section.getBoundingClientRect();
+      const isInView = rect.top < window.innerHeight && rect.bottom > 0;
+
       // Set initial state
       gsap.set(section, {
-        opacity: 0,
-        y: 50,
-        scale: 0.95
+        opacity: isInView ? 1 : 0,
+        y: isInView ? 0 : 50,
+        scale: isInView ? 1 : 0.95
       });
+
+      // If already in view, skip animation
+      if (isInView) return;
 
       ScrollTrigger.create({
         trigger: section,
@@ -146,26 +153,37 @@ export default function StagePage() {
       });
     });
     
-    // After images load, refresh ScrollTrigger to ensure cast section triggers work
-    // Also check if cast section is already visible and make it visible
-    if (!imagesLoading) {
-      refreshTimerRef.current = setTimeout(() => {
-        ScrollTrigger.refresh();
-        const castSection = sectionRefs.current[2];
-        if (castSection) {
-          const rect = castSection.getBoundingClientRect();
-          const isInView = rect.top < window.innerHeight && rect.bottom > 0;
-          if (isInView) {
-            gsap.to(castSection, {
+    // Ensure Cast & Crew section is always visible - fallback if ScrollTrigger doesn't fire
+    // Check all sections and make sure they're visible if they're in viewport
+    const ensureSectionsVisible = () => {
+      sectionRefs.current.forEach((section) => {
+        if (!section) return;
+        const rect = section.getBoundingClientRect();
+        const isInView = rect.top < window.innerHeight * 1.5 && rect.bottom > -window.innerHeight * 0.5;
+        if (isInView) {
+          const currentOpacity = gsap.getProperty(section, 'opacity') as number;
+          if (currentOpacity === 0 || currentOpacity === undefined) {
+            gsap.to(section, {
               opacity: 1,
               y: 0,
               scale: 1,
-              duration: 1,
-              ease: 'power2.out',
-              immediateRender: false
-      });
+              duration: 0.5,
+              ease: 'power2.out'
+            });
           }
         }
+      });
+    };
+
+    // Check immediately and after a short delay
+    requestAnimationFrame(() => {
+      ensureSectionsVisible();
+    });
+    
+    if (!imagesLoading) {
+      refreshTimerRef.current = setTimeout(() => {
+        ScrollTrigger.refresh();
+        ensureSectionsVisible();
       }, 500);
     }
 
@@ -240,15 +258,39 @@ export default function StagePage() {
           </p>
         </section>
 
+        {/* Cast & Crew Section - moved above Gallery */}
+        <section className="story-section cast-section" ref={el => { sectionRefs.current[1] = el as HTMLDivElement }}>
+          <h2>Cast & Crew</h2>
+          <p style={{ 
+            color: 'rgba(255, 255, 255, 0.7)', 
+            fontFamily: "Oswald, sans-serif",
+            fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+            marginTop: 'clamp(1rem, 2vh, 1.5rem)',
+            marginBottom: 'clamp(1rem, 2vh, 1.5rem)'
+          }}>
+            Performer names and roles will go here
+          </p>
+          {stageData.cast.length > 0 && (
+          <div className="cast-grid">
+            {stageData.cast.map((member, i) => (
+              <div key={i} className="cast-member-card">
+                <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: "Oswald, sans-serif" }}>{member.name}</div>
+                <div style={{ color: '#ffffff', opacity: 0.8, fontFamily: "Oswald, sans-serif" }}>{member.role}</div>
+              </div>
+            ))}
+          </div>
+          )}
+        </section>
+
         {/* Stage Images Gallery */}
-        <section className="story-section stage-images-section" ref={el => { sectionRefs.current[1] = el as HTMLDivElement }}>
+        <section className="story-section stage-images-section" ref={el => { sectionRefs.current[2] = el as HTMLDivElement }}>
           <h2>Gallery</h2>
           {imagesLoading ? (
             <div style={{ 
               textAlign: 'center', 
               padding: '2rem',
               color: 'rgba(255, 255, 255, 0.7)',
-              fontFamily: "Bungee, 'Playfair Display', serif"
+              fontFamily: "Oswald, sans-serif"
             }}>
               Loading images...
             </div>
@@ -283,33 +325,10 @@ export default function StagePage() {
               textAlign: 'center', 
               padding: '2rem',
               color: 'rgba(255, 255, 255, 0.7)',
-              fontFamily: "Bungee, 'Playfair Display', serif"
+              fontFamily: "Oswald, sans-serif"
             }}>
               No images found
             </div>
-          )}
-        </section>
-
-        <section className="story-section cast-section" ref={el => { sectionRefs.current[2] = el as HTMLDivElement }}>
-          <h2>Cast & Crew</h2>
-          <p style={{ 
-            color: 'rgba(255, 255, 255, 0.7)', 
-            fontFamily: "Bungee, 'Playfair Display', serif",
-            fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
-            marginTop: 'clamp(1rem, 2vh, 1.5rem)',
-            marginBottom: 'clamp(1rem, 2vh, 1.5rem)'
-          }}>
-            Performer names and roles will go here
-          </p>
-          {stageData.cast.length > 0 && (
-          <div className="cast-grid">
-            {stageData.cast.map((member, i) => (
-              <div key={i} className="cast-member-card">
-                <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.name}</div>
-                <div style={{ color: '#ffffff', opacity: 0.8, fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.role}</div>
-              </div>
-            ))}
-          </div>
           )}
         </section>
 
@@ -328,8 +347,8 @@ export default function StagePage() {
                   border: '2px solid rgba(255, 255, 255, 0.2)'
                 }}>
                   <div style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', marginBottom: 'clamp(0.25rem, 1vw, 0.5rem)' }}>{award.icon}</div>
-                  <div style={{ fontWeight: 'bold', fontSize: 'clamp(1rem, 2.5vw, 1.2rem)', marginBottom: 'clamp(0.25rem, 1vw, 0.5rem)', fontFamily: "Bungee, 'Playfair Display', serif" }}>{award.name}</div>
-                  <div style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)', opacity: 0.8, fontFamily: "Bungee, 'Playfair Display', serif" }}>{award.recipient}</div>
+                  <div style={{ fontWeight: 'bold', fontSize: 'clamp(1rem, 2.5vw, 1.2rem)', marginBottom: 'clamp(0.25rem, 1vw, 0.5rem)', fontFamily: "Oswald, sans-serif" }}>{award.name}</div>
+                  <div style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)', opacity: 0.8, fontFamily: "Oswald, sans-serif" }}>{award.recipient}</div>
                 </div>
               ))}
             </div>

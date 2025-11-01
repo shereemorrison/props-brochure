@@ -27,7 +27,14 @@ export const days: Day[] = [
         stageNumber: 'Stage One',
         title: 'FIVE MINUTES',
         summary: 'Summary of FIVE MINUTES play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Director' },
+          { name: 'Example 4', role: 'Actor' },
+          { name: 'Example 5', role: 'Actor' },
+          { name: 'Example 6', role: 'Producer' }
+        ],
         awards: []
       },
       {
@@ -35,7 +42,15 @@ export const days: Day[] = [
         stageNumber: 'Stage Two',
         title: 'THE BAD SIDE',
         summary: 'Summary of THE BAD SIDE play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Actor' },
+          { name: 'Example 4', role: 'Producer' },
+          { name: 'Example 5', role: 'Actor' },
+          { name: 'Example 6', role: 'Director' },
+          { name: 'Example 7', role: 'Actor' }
+        ],
         awards: []
       },
       {
@@ -43,7 +58,13 @@ export const days: Day[] = [
         stageNumber: 'Stage Three',
         title: 'FERRIER\'S SHOES',
         summary: 'Summary of FERRIER\'S SHOES play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Actor' },
+          { name: 'Example 4', role: 'Director' },
+          { name: 'Example 5', role: 'Producer' }
+        ],
         awards: []
       }
     ]
@@ -58,7 +79,14 @@ export const days: Day[] = [
         stageNumber: 'Stage One',
         title: 'FIVE MINUTES',
         summary: 'Summary of FIVE MINUTES play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Director' },
+          { name: 'Example 4', role: 'Actor' },
+          { name: 'Example 5', role: 'Actor' },
+          { name: 'Example 6', role: 'Producer' }
+        ],
         awards: []
       },
       {
@@ -66,7 +94,15 @@ export const days: Day[] = [
         stageNumber: 'Stage Two',
         title: 'THE BAD SIDE',
         summary: 'Summary of THE BAD SIDE play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Actor' },
+          { name: 'Example 4', role: 'Producer' },
+          { name: 'Example 5', role: 'Actor' },
+          { name: 'Example 6', role: 'Director' },
+          { name: 'Example 7', role: 'Actor' }
+        ],
         awards: []
       },
       {
@@ -74,7 +110,13 @@ export const days: Day[] = [
         stageNumber: 'Stage Three',
         title: 'FERRIER\'S SHOES',
         summary: 'Summary of FERRIER\'S SHOES play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Actor' },
+          { name: 'Example 4', role: 'Director' },
+          { name: 'Example 5', role: 'Producer' }
+        ],
         awards: []
       }
     ]
@@ -89,7 +131,14 @@ export const days: Day[] = [
         stageNumber: 'Stage One',
         title: 'FIVE MINUTES',
         summary: 'Summary of FIVE MINUTES play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Director' },
+          { name: 'Example 4', role: 'Actor' },
+          { name: 'Example 5', role: 'Actor' },
+          { name: 'Example 6', role: 'Producer' }
+        ],
         awards: []
       },
       {
@@ -97,7 +146,15 @@ export const days: Day[] = [
         stageNumber: 'Stage Two',
         title: 'THE BAD SIDE',
         summary: 'Summary of THE BAD SIDE play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Actor' },
+          { name: 'Example 4', role: 'Producer' },
+          { name: 'Example 5', role: 'Actor' },
+          { name: 'Example 6', role: 'Director' },
+          { name: 'Example 7', role: 'Actor' }
+        ],
         awards: []
       },
       {
@@ -105,7 +162,13 @@ export const days: Day[] = [
         stageNumber: 'Stage Three',
         title: 'FERRIER\'S SHOES',
         summary: 'Summary of FERRIER\'S SHOES play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Actor' },
+          { name: 'Example 4', role: 'Director' },
+          { name: 'Example 5', role: 'Producer' }
+        ],
         awards: []
       }
     ]
@@ -121,7 +184,14 @@ export const days: Day[] = [
         stageNumber: 'Stage One',
         title: 'FIVE MINUTES',
         summary: 'Summary of FIVE MINUTES play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Director' },
+          { name: 'Example 4', role: 'Actor' },
+          { name: 'Example 5', role: 'Actor' },
+          { name: 'Example 6', role: 'Producer' }
+        ],
         awards: []
       },
       {
@@ -129,7 +199,14 @@ export const days: Day[] = [
         stageNumber: 'Stage Two',
         title: 'OUR SPACE',
         summary: 'Summary of OUR SPACE play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Actor' },
+          { name: 'Example 4', role: 'Director' },
+          { name: 'Example 5', role: 'Producer' },
+          { name: 'Example 6', role: 'Actor' }
+        ],
         awards: []
       },
       {
@@ -137,7 +214,15 @@ export const days: Day[] = [
         stageNumber: 'Stage Two',
         title: 'THE BAD SIDE',
         summary: 'Summary of THE BAD SIDE play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Actor' },
+          { name: 'Example 4', role: 'Producer' },
+          { name: 'Example 5', role: 'Actor' },
+          { name: 'Example 6', role: 'Director' },
+          { name: 'Example 7', role: 'Actor' }
+        ],
         awards: []
       },
       {
@@ -145,7 +230,14 @@ export const days: Day[] = [
         stageNumber: 'Stage Two',
         title: 'PIRATED',
         summary: 'Summary of PIRATED play will go here',
-        cast: [],
+        cast: [
+          { name: 'Example 1', role: 'Actor' },
+          { name: 'Example 2', role: 'Actor' },
+          { name: 'Example 3', role: 'Director' },
+          { name: 'Example 4', role: 'Actor' },
+          { name: 'Example 5', role: 'Actor' },
+          { name: 'Example 6', role: 'Producer' }
+        ],
         awards: []
       }
     ]

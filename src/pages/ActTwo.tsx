@@ -155,8 +155,8 @@ export default function ActTwo() {
           <div className="cast-grid">
             {perf.cast.map((member, i) => (
               <div key={i} className="cast-member-card">
-                <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.name}</div>
-                <div style={{ color: '#ffffff', opacity: 0.8, fontFamily: "Bungee, 'Playfair Display', serif" }}>{member.role}</div>
+                <div style={{ fontWeight: 'bold', color: '#ffd700', fontFamily: '"Oswald", sans-serif' }}>{member.name}</div>
+                <div style={{ color: '#ffffff', opacity: 0.8, fontFamily: '"Oswald", sans-serif' }}>{member.role}</div>
               </div>
             ))}
           </div>
@@ -177,8 +177,8 @@ export default function ActTwo() {
                 border: '2px solid rgba(255, 255, 255, 0.2)'
               }}>
                 <div style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', marginBottom: 'clamp(0.25rem, 1vw, 0.5rem)' }}>{award.icon}</div>
-                <div style={{ fontWeight: 'bold', fontSize: 'clamp(1rem, 2.5vw, 1.2rem)', marginBottom: 'clamp(0.25rem, 1vw, 0.5rem)', fontFamily: "Bungee, 'Playfair Display', serif" }}>{award.name}</div>
-                <div style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)', opacity: 0.8, fontFamily: "Bungee, 'Playfair Display', serif" }}>{award.recipient}</div>
+                <div style={{ fontWeight: 'bold', fontSize: 'clamp(1rem, 2.5vw, 1.2rem)', marginBottom: 'clamp(0.25rem, 1vw, 0.5rem)', fontFamily: '"Oswald", sans-serif' }}>{award.name}</div>
+                <div style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)', opacity: 0.8, fontFamily: '"Oswald", sans-serif' }}>{award.recipient}</div>
               </div>
             ))}
           </div>
