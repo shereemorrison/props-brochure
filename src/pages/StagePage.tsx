@@ -1,110 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { days } from '../data/performances';
+import { getGalleryImages } from '../data/gallery';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 
-// Import critical images from assets (bundled with app)
-const stageoneImages = import.meta.glob('../assets/images/stageone/*.webp', { eager: true, as: 'url' });
-const stagetwoImages = import.meta.glob('../assets/images/stagetwo/*.webp', { eager: true, as: 'url' });
-const stagethreeImages = import.meta.glob('../assets/images/stagethree/*.webp', { eager: true, as: 'url' });
-
-// Helper function to get bundled images for a stage
-function getBundledImages(stageFolder: string): string[] {
-  let images: Record<string, string> = {};
-  if (stageFolder === 'stageone') {
-    images = stageoneImages;
-  } else if (stageFolder === 'stagetwo') {
-    images = stagetwoImages;
-  } else if (stageFolder === 'stagethree') {
-    images = stagethreeImages;
-  }
-  
-  // Sort by filename to ensure correct order (extract number from filename)
-  return Object.values(images).sort((a, b) => {
-    const matchA = a.match(/(\d+)\.webp/);
-    const matchB = b.match(/(\d+)\.webp/);
-    const numA = matchA ? parseInt(matchA[1]) : 0;
-    const numB = matchB ? parseInt(matchB[1]) : 0;
-    return numA - numB;
-  });
-}
-
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
-
-// Helper function to get stage folder name from stage ID
-function getStageFolder(stageId: string): string {
-  if (stageId.includes('stage-one')) return 'stageone';
-  if (stageId.includes('stage-two')) return 'stagetwo';
-  if (stageId.includes('stage-three')) return 'stagethree';
-  return 'stageone'; // default
-}
-
-// Dynamically discover images - first use bundled assets, then fall back to public folder
-async function discoverImages(stageFolder: string, maxAttempts: number = 400): Promise<string[]> {
-  const images: string[] = [];
-  
-  // First, add bundled images from assets (these are immediately available)
-  const bundledImages = getBundledImages(stageFolder);
-  images.push(...bundledImages);
-  console.log(`[DEBUG] Loaded ${bundledImages.length} bundled images from assets for ${stageFolder}`);
-  
-  // Then try to discover additional images from public folder (starting from where bundled images end)
-  const startIndex = bundledImages.length + 1;
-  let consecutiveFailures = 0;
-  const maxConsecutiveFailures = 15;
-  let foundAny = false;
-  
-  // Try loading images sequentially from public folder
-  for (let i = startIndex; i <= maxAttempts; i++) {
-    const imagePath = `/${stageFolder}/${stageFolder}${i}.webp`;
-    
-    const result = await new Promise<string | null>((resolve) => {
-      let resolved = false;
-      const img = new Image();
-      
-      const timeoutId = setTimeout(() => {
-        if (!resolved) {
-          resolved = true;
-          resolve(null);
-        }
-      }, 1500);
-      
-      img.onload = () => {
-        if (!resolved) {
-          resolved = true;
-          clearTimeout(timeoutId);
-          resolve(imagePath);
-        }
-      };
-      
-      img.onerror = () => {
-        if (!resolved) {
-          resolved = true;
-          clearTimeout(timeoutId);
-          resolve(null);
-        }
-      };
-      
-      img.src = imagePath;
-    });
-    
-    if (result) {
-      images.push(result);
-      consecutiveFailures = 0;
-      foundAny = true;
-    } else {
-      consecutiveFailures++;
-      if (foundAny && consecutiveFailures >= maxConsecutiveFailures) {
-        break;
-      }
-    }
-  }
-  
-  return images;
-}
 
 export default function StagePage() {
   const navigate = useNavigate();
@@ -143,25 +46,17 @@ export default function StagePage() {
     );
   }
 
-  // Get stage folder and discover images dynamically
-  const stageFolder = getStageFolder(stageId || '');
-  
+  // Get gallery images from data file
   useEffect(() => {
     setImagesLoading(true);
-    discoverImages(stageFolder, 400).then((discoveredImages) => {
-      console.log(`Found ${discoveredImages.length} images for ${stageFolder}`);
-      // Limit to first 8 images
-      const limitedImages = discoveredImages.slice(0, 8);
-      console.log(`Setting ${limitedImages.length} images to display`);
-      setImagePaths(limitedImages);
-      setImagesLoading(false);
-      
-    }).catch((error) => {
-      console.error('Error loading images:', error);
-      setImagesLoading(false);
-      setImagePaths([]);
-    });
-  }, [stageFolder]);
+    
+    // Get images for this stage from the gallery data file
+    const images = getGalleryImages(stageId || '');
+    console.log(`Found ${images.length} gallery images for stage: ${stageId}`);
+    
+    setImagePaths(images);
+    setImagesLoading(false);
+  }, [stageId]);
 
   // Split the summary into words
   const words = stageData.summary.split(' ');

@@ -20,8 +20,14 @@
     padding: 0 clamp(0.5rem, 2vw, 1rem);
     
     @media (max-width: 768px) {
-      grid-template-columns: repeat(auto-fill, minmax(calc(50vw - 1.5rem), 1fr));
-      gap: clamp(0.5rem, 1.5vw, 1rem);
+      grid-template-columns: repeat(auto-fill, minmax(clamp(100px, 30vw, 140px), 1fr));
+      gap: clamp(0.5rem, 1.5vw, 0.75rem);
+      padding: 0 clamp(0.5rem, 1.5vw, 0.75rem);
+    }
+    
+    @media (max-width: 480px) {
+      grid-template-columns: repeat(auto-fill, minmax(clamp(90px, 28vw, 120px), 1fr));
+      gap: clamp(0.4rem, 1.2vw, 0.6rem);
     }
     
     .stage-image-container {

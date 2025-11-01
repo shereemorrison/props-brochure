@@ -15,7 +15,7 @@ const menuItems = [
   { id: 'tuesday-25th', title: 'Tues', subtitle: '25th', route: '/day/tuesday-25th', year: 2025, background: '/theatre/theatre2.webp' },
   { id: 'wednesday-26th', title: 'Wednes', subtitle: '26th', route: '/day/wednesday-26th', year: 2025, background: '/theatre/theatre3.webp' },
   { id: 'thursday-27th', title: 'Thurs', subtitle: '27th', route: '/day/thursday-27th', year: 2025, background: '/theatre/theatre4.webp' },
-  { id: 'credits', title: 'Credits', subtitle: '', route: '/acknowledgements', year: null, background: '/theatre/theatre5.webp' },
+  { id: 'credits', title: 'Gallery', subtitle: '', route: '/acknowledgements', year: 2025, background: '/theatre/theatre5.webp' },
   { id: 'contact', title: 'Contact', subtitle: '', route: '/contact', year: null, background: '/theatre/theatre6.webp' },
 ];
 
@@ -159,20 +159,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
         }}
       >
         {/* Menu Items Grid - Page-like Layout */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, clamp(90px, 18vw, 150px)), 1fr))',
-            gap: 'clamp(0.5rem, 2vw, 1.5rem)',
-            justifyContent: 'center',
-            alignItems: 'center',
-            maxWidth: '1400px',
-            width: '100%',
-            boxSizing: 'border-box',
-            padding: 'clamp(1rem, 4vh, 2rem) clamp(0.25rem, 1vw, 1rem)',
-            margin: '0 auto'
-          }}
-        >
+        <div className="menu-grid">
           {menuItems.map((item, index) => (
             <div
               key={item.id}
@@ -189,11 +176,11 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                 aspectRatio: '2 / 3',
                 cursor: 'pointer',
                 overflow: 'hidden',
-                borderRadius: 'clamp(8px, 1.5vw, 12px)',
+                borderRadius: 'clamp(10px, 2vw, 16px)',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
                 transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                maxWidth: 'clamp(90px, 18vw, 150px)',
-                minWidth: 'clamp(75px, 15vw, 90px)',
+                maxWidth: 'clamp(140px, 25vw, 220px)',
+                minWidth: 'clamp(120px, 20vw, 140px)',
                 margin: '0 auto',
                 touchAction: 'manipulation',
                 backgroundColor: 'rgba(255, 215, 0, 0.05)',
@@ -271,7 +258,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
               >
                 <h2
                   style={{
-                    fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)',
+                    fontSize: 'clamp(1.1rem, 3vw, 1.6rem)',
                     fontFamily: '"Bungee", "Playfair Display", serif',
                     fontWeight: 700,
                     color: '#ffd700',
@@ -287,7 +274,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                 {item.subtitle && (
                   <div
                     style={{
-                      fontSize: 'clamp(0.75rem, 2vw, 1rem)',
+                      fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)',
                       fontFamily: '"Bungee", "Playfair Display", serif',
                       color: 'rgba(255, 255, 255, 0.9)',
                       textAlign: 'center',
@@ -301,7 +288,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                 {item.year && (
                   <div
                     style={{
-                      fontSize: 'clamp(0.7rem, 1.8vw, 0.9rem)',
+                      fontSize: 'clamp(0.85rem, 2.2vw, 1.1rem)',
                       fontFamily: '"Bungee", "Playfair Display", serif',
                       color: 'rgba(255, 255, 255, 0.7)',
                       textAlign: 'center',
