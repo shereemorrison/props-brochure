@@ -1,34 +1,62 @@
 // Gallery images for each stage
 // Images are imported from assets and bundled with the app
 
-import stageone1 from '../assets/images/stageone/stageone1.webp';
-import stageone2 from '../assets/images/stageone/stageone2.webp';
-import stageone3 from '../assets/images/stageone/stageone3.webp';
-import stageone4 from '../assets/images/stageone/stageone4.webp';
-import stageone5 from '../assets/images/stageone/stageone5.webp';
-import stageone6 from '../assets/images/stageone/stageone6.webp';
-import stageone7 from '../assets/images/stageone/stageone7.webp';
-import stageone8 from '../assets/images/stageone/stageone8.webp';
-import stageone9 from '../assets/images/stageone/stageone9.webp';
-import stageone10 from '../assets/images/stageone/stageone10.webp';
+// Import all images dynamically using Vite's glob import
+const stageoneImages = import.meta.glob('../assets/images/stageone/*.webp', { eager: true });
+const stagetwoImages = import.meta.glob('../assets/images/stagetwo/*.webp', { eager: true });
+const stagethreeImages = import.meta.glob('../assets/images/stagethree/*.webp', { eager: true });
 
-import stagetwo2 from '../assets/images/stagetwo/stagetwo2.webp';
-import stagetwo4 from '../assets/images/stagetwo/stagetwo4.webp';
-import stagetwo5 from '../assets/images/stagetwo/stagetwo5.webp';
-import stagetwo6 from '../assets/images/stagetwo/stagetwo6.webp';
-import stagetwo7 from '../assets/images/stagetwo/stagetwo7.webp';
-import stagetwo8 from '../assets/images/stagetwo/stagetwo8.webp';
-import stagetwo9 from '../assets/images/stagetwo/stagetwo9.webp';
-import stagetwo10 from '../assets/images/stagetwo/stagetwo10.webp';
+// Helper to convert glob results to sorted array of paths
+function getSortedImagePaths(images: Record<string, any>): string[] {
+  return Object.values(images)
+    .map((img: any) => img.default || img)
+    .filter((path: string) => path && typeof path === 'string')
+    .sort((a: string, b: string) => {
+      // Extract numbers from filenames for proper sorting
+      const numA = parseInt(a.match(/\d+/)?.[0] || '0', 10);
+      const numB = parseInt(b.match(/\d+/)?.[0] || '0', 10);
+      return numA - numB;
+    });
+}
 
-import stagethree2 from '../assets/images/stagethree/stagethree2.webp';
-import stagethree4 from '../assets/images/stagethree/stagethree4.webp';
-import stagethree5 from '../assets/images/stagethree/stagethree5.webp';
-import stagethree6 from '../assets/images/stagethree/stagethree6.webp';
-import stagethree7 from '../assets/images/stagethree/stagethree7.webp';
-import stagethree8 from '../assets/images/stagethree/stagethree8.webp';
-import stagethree9 from '../assets/images/stagethree/stagethree9.webp';
-import stagethree10 from '../assets/images/stagethree/stagethree10.webp';
+// Get all images sorted by filename number
+const allStageoneImages = getSortedImagePaths(stageoneImages).filter((path: string) => 
+  !path.includes(' copy') // Exclude "copy" files
+);
+const allStagetwoImages = getSortedImagePaths(stagetwoImages).filter((path: string) => 
+  !path.includes(' copy') // Exclude "copy" files
+);
+const allStagethreeImages = getSortedImagePaths(stagethreeImages).filter((path: string) => 
+  !path.includes(' copy') // Exclude "copy" files
+);
+
+// For backwards compatibility with stage pages, keep first 8 images
+const stageone1 = allStageoneImages[0];
+const stageone2 = allStageoneImages[1];
+const stageone3 = allStageoneImages[2];
+const stageone4 = allStageoneImages[3];
+const stageone5 = allStageoneImages[4];
+const stageone6 = allStageoneImages[5];
+const stageone7 = allStageoneImages[6];
+const stageone8 = allStageoneImages[7];
+
+const stagetwo2 = allStagetwoImages.find((p: string) => p.includes('stagetwo2')) || allStagetwoImages[0];
+const stagetwo4 = allStagetwoImages.find((p: string) => p.includes('stagetwo4')) || allStagetwoImages[1];
+const stagetwo5 = allStagetwoImages.find((p: string) => p.includes('stagetwo5')) || allStagetwoImages[2];
+const stagetwo6 = allStagetwoImages.find((p: string) => p.includes('stagetwo6')) || allStagetwoImages[3];
+const stagetwo7 = allStagetwoImages.find((p: string) => p.includes('stagetwo7')) || allStagetwoImages[4];
+const stagetwo8 = allStagetwoImages.find((p: string) => p.includes('stagetwo8')) || allStagetwoImages[5];
+const stagetwo9 = allStagetwoImages.find((p: string) => p.includes('stagetwo9')) || allStagetwoImages[6];
+const stagetwo10 = allStagetwoImages.find((p: string) => p.includes('stagetwo10')) || allStagetwoImages[7];
+
+const stagethree2 = allStagethreeImages.find((p: string) => p.includes('stagethree2')) || allStagethreeImages[0];
+const stagethree4 = allStagethreeImages.find((p: string) => p.includes('stagethree4')) || allStagethreeImages[1];
+const stagethree5 = allStagethreeImages.find((p: string) => p.includes('stagethree5')) || allStagethreeImages[2];
+const stagethree6 = allStagethreeImages.find((p: string) => p.includes('stagethree6')) || allStagethreeImages[3];
+const stagethree7 = allStagethreeImages.find((p: string) => p.includes('stagethree7')) || allStagethreeImages[4];
+const stagethree8 = allStagethreeImages.find((p: string) => p.includes('stagethree8')) || allStagethreeImages[5];
+const stagethree9 = allStagethreeImages.find((p: string) => p.includes('stagethree9')) || allStagethreeImages[6];
+const stagethree10 = allStagethreeImages.find((p: string) => p.includes('stagethree10')) || allStagethreeImages[7];
 
 // Gallery item interface
 export interface GalleryImage {
@@ -189,14 +217,10 @@ export function getGalleryImages(stageId: string): string[] {
 export function getAllGalleryImages(): string[] {
   const allImages = new Set<string>();
   
-  // Collect all image paths from all stages
-  Object.values(galleryImages).forEach(stageImages => {
-    stageImages.forEach(img => {
-      if (img.path) {
-        allImages.add(img.path);
-      }
-    });
-  });
+  // Include all images from all three stages (excluding "copy" files)
+  allStageoneImages.forEach((path: string) => allImages.add(path));
+  allStagetwoImages.forEach((path: string) => allImages.add(path));
+  allStagethreeImages.forEach((path: string) => allImages.add(path));
   
   return Array.from(allImages);
 }

@@ -3,6 +3,14 @@
   // Center content on desktop when it fits in viewport
   @media (min-width: 1024px) {
     justify-content: center;
+    padding-top: clamp(1rem, 3vh, 2rem) !important; // Less padding on desktop
+    padding-bottom: clamp(1rem, 3vh, 2rem) !important; // Normal padding on desktop
+    min-height: auto !important; // Don't force full height on desktop
+  }
+  
+  // Extra padding on mobile for scrolling
+  @media (max-width: 1023px) {
+    padding-bottom: clamp(6rem, 12vh, 8rem) !important; // Extra padding at bottom for mobile scrolling
   }
 }
 

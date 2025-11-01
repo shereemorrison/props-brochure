@@ -197,7 +197,7 @@ main.sphere-main {
   bottom: 0;
 }
 
-// Scroll lock for body when gallery is enlarged
+/* Scroll lock for body when gallery is enlarged */
 body.dg-scroll-lock {
   overflow: hidden;
 }

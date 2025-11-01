@@ -124,7 +124,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
   };
   
   const handleTouchStart = (e: React.TouchEvent, index: number) => {
-    e.stopPropagation();
+    // Don't stop propagation - allow scroll to work
     const touch = e.touches[0];
     setTouchStartMap(prev => {
       const newMap = new Map(prev);
@@ -133,8 +133,27 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
     });
   };
   
+  const handleTouchMove = (e: React.TouchEvent) => {
+    // Allow scrolling - don't prevent default
+    // If user is scrolling, clear any pending click
+    const touch = e.touches[0];
+    let scrolling = false;
+    
+    touchStartMap.forEach((start, idx) => {
+      const deltaY = Math.abs(touch.clientY - start.y);
+      if (deltaY > 5) {
+        scrolling = true;
+      }
+    });
+    
+    if (scrolling) {
+      // User is scrolling, clear all touch starts
+      setTouchStartMap(new Map());
+    }
+  };
+  
   const handleTouchEnd = (e: React.TouchEvent, index: number, route: string) => {
-    e.stopPropagation();
+    // Don't stop propagation - allow scroll to work
     const touchStart = touchStartMap.get(index);
     
     if (!touchStart) {
@@ -146,9 +165,10 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
     const deltaY = Math.abs(touch.clientY - touchStart.y);
     const deltaTime = Date.now() - touchStart.time;
     
-    // Only trigger click if movement was small (< 10px) and quick (< 300ms)
+    // Only trigger click if movement was very small (< 5px) and quick (< 250ms)
     // This prevents clicks when user is scrolling
-    if (deltaY < 10 && deltaTime < 300) {
+    if (deltaY < 5 && deltaTime < 250) {
+      e.preventDefault(); // Only prevent default if it's actually a click
       handleItemClick(index, route);
     }
     
@@ -172,12 +192,18 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
         left: 0,
         width: '100vw',
         height: '100vh',
+        maxHeight: '100vh',
         overflowY: 'auto',
         overflowX: 'hidden',
         zIndex: 100,
         background: 'radial-gradient(ellipse at center, #1a1a1a 0%, #000000 100%)',
         WebkitOverflowScrolling: 'touch',
-        overscrollBehavior: 'contain'
+        overscrollBehavior: 'contain',
+        // Ensure touch scrolling works
+        touchAction: 'pan-y',
+        // Prevent horizontal scroll
+        overscrollBehaviorX: 'contain',
+        overscrollBehaviorY: 'auto'
       }}
     >
       {/* Header - Matching Landing Page - scrolls with content */}
@@ -186,20 +212,23 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
       {/* Content */}
       <div
         className="menu-content-container"
+        onTouchMove={handleTouchMove}
         style={{
           position: 'relative',
           zIndex: 2,
-          minHeight: 'calc(100vh - clamp(84px, 15vw, 144px) - clamp(2rem, 3vw, 4rem))', // Account for header height
+          minHeight: '100vh', // Ensure minimum height
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'flex-start', // Allow natural scrolling on mobile
           padding: 'clamp(2rem, 6vh, 4rem) clamp(1rem, 3vw, 3rem)',
           paddingTop: 'clamp(2rem, 6vh, 4rem)', // Normal padding since header scrolls
-          paddingBottom: 'clamp(4rem, 8vh, 6rem)', // Extra padding at bottom for mobile scrolling
+          paddingBottom: 'clamp(2rem, 4vh, 3rem)', // Base padding, mobile gets extra via CSS
           boxSizing: 'border-box',
           // Ensure content can grow beyond viewport
-          flexShrink: 0
+          flexShrink: 0,
+          // Ensure content is scrollable
+          width: '100%'
         }}
       >
         {/* Menu Items Grid - Page-like Layout */}
@@ -224,7 +253,7 @@ export default function Menu({ onPageClick, isVisible, skipAnimation = false }: 
                 maxWidth: 'clamp(140px, 25vw, 220px)',
                 minWidth: 'clamp(120px, 20vw, 140px)',
                 margin: '0 auto',
-                touchAction: 'manipulation',
+                touchAction: 'pan-y', // Allow vertical scrolling, but still allow clicks
                 backgroundColor: 'rgba(255, 215, 0, 0.05)',
                 opacity: skipAnimation ? 1 : 0, // Start visible if skipping animation, GSAP will animate otherwise
                 justifySelf: 'center'
