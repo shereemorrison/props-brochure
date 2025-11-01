@@ -9,9 +9,20 @@
   padding-bottom: clamp(2rem, 5vh, 4rem); // Extra padding at bottom to ensure content is scrollable
   box-sizing: border-box;
   
+  // Credits page exception - needs fixed height for DomeGallery
+  &.credits-page {
+    height: 100vh;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+  
   @media (max-width: 768px) {
     padding: clamp(0.5rem, 1.5vw, 1rem);
     padding-bottom: clamp(2rem, 5vh, 4rem);
+    
+    &.credits-page {
+      padding-bottom: 0;
+    }
   }
   
   .back-button {

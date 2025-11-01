@@ -12,7 +12,7 @@ export default function Credits() {
   const allImages = getAllGalleryImages();
   
   return (
-    <div className="detail-page" style={{ padding: 0 }}>
+    <div className="detail-page credits-page" style={{ padding: 0 }}>
       <button 
         className="back-button" 
         onClick={() => navigate('/')}
@@ -20,7 +20,7 @@ export default function Credits() {
       >
         ← Back
       </button>
-      <div style={{ width: '100%', minHeight: '100vh', position: 'relative' }}>
+      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
         <DomeGallery 
           images={allImages}
           fit={0.5}
