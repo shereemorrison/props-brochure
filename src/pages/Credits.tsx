@@ -1,74 +1,51 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { performances } from '../data/performances';
-import { getAllGalleryImages } from '../data/gallery';
-import DomeGallery from '../components/DomeGallery';
 
 export default function Credits() {
   const navigate = useNavigate();
-  const perf = performances.find(p => p.id === 'acknowledgements');
-  
-  // Get all unique images from all stages
-  const allImages = getAllGalleryImages();
-  
-  // Debug logging
-  React.useEffect(() => {
-    console.log('[Credits] allImages:', allImages.length, 'images');
-    if (allImages.length > 0) {
-      console.log('[Credits] First few image paths:', allImages.slice(0, 3));
-    } else {
-      console.warn('[Credits] No images found! Check gallery.ts');
-    }
-  }, [allImages]);
-  
-  // Show message if no images
-  if (allImages.length === 0) {
-    return (
-      <div className="detail-page credits-page" style={{ padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: 'white', textAlign: 'center', padding: '2rem' }}>
-          <h2>No images found</h2>
-          <p>Please check that images exist in src/assets/images/stageone, stagetwo, and stagethree folders.</p>
-          <button 
-            className="back-button" 
-            onClick={() => navigate('/')}
-            style={{ marginTop: '2rem' }}
-          >
-            ← Back
-          </button>
-        </div>
-      </div>
-    );
-  }
   
   return (
-    <div className="detail-page credits-page" style={{ padding: 0 }}>
+    <div className="detail-page">
       <button 
         className="back-button" 
         onClick={() => navigate('/')}
-        style={{ zIndex: 1000 }}
       >
         ← Back
       </button>
-      <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-        <DomeGallery 
-          images={allImages}
-          fit={0.5}
-          fitBasis="auto"
-          minRadius={400}
-          maxRadius={Infinity}
-          padFactor={0.2}
-          overlayBlurColor="#060010"
-          maxVerticalRotationDeg={5}
-          dragSensitivity={20}
-          enlargeTransitionMs={300}
-          segments={35}
-          dragDampening={2}
-          openedImageWidth="min(80vw, 600px)"
-          openedImageHeight="min(80vh, 600px)"
-          imageBorderRadius="20px"
-          openedImageBorderRadius="30px"
-          grayscale={false}
-        />
+      <div className="detail-content" style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        minHeight: '60vh',
+        textAlign: 'center',
+        padding: 'clamp(2rem, 5vh, 4rem) clamp(1rem, 3vw, 2rem)'
+      }}>
+        <h1 style={{ 
+          fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+          marginBottom: 'clamp(1rem, 3vh, 2rem)',
+          fontFamily: 'var(--font-heading)'
+        }}>
+          Onwards to 2026
+        </h1>
+        <h2 style={{ 
+          fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
+          color: '#ffd700',
+          marginBottom: 'clamp(1.5rem, 4vh, 2.5rem)',
+          fontFamily: 'var(--font-heading)',
+          fontWeight: 600
+        }}>
+          Coming Soon
+        </h2>
+        <p style={{ 
+          fontSize: 'clamp(1rem, 2.5vw, 1.3rem)',
+          color: 'rgba(255, 255, 255, 0.8)',
+          fontFamily: 'var(--font-body)',
+          maxWidth: '600px',
+          lineHeight: 1.6
+        }}>
+          What's next news will go here
+        </p>
       </div>
     </div>
   );

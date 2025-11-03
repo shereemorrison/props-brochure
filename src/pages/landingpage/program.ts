@@ -180,19 +180,16 @@ export default class Program {
     // ctx.textBaseline = 'middle'
     // ctx.fillText(title, 256, 180)
 
-    // Add subtitle
-    ctx.font = '20px Oswald'
+    // Add subtitle - centered and larger, split across two lines
+    // Use Bungee font - ensure it's loaded by using document.fonts API
+    ctx.font = '80px Oswald' // Add quotes and fallback
     ctx.fillStyle = '#cccccc'
     ctx.textAlign = 'center'
-    ctx.fillText('Props Theatre', 256, 400)
-
-    // Add decorative elements
-    ctx.strokeStyle = '#ffffff'
-    ctx.lineWidth = 2
-    ctx.beginPath()
-    ctx.moveTo(100, 500)
-    ctx.lineTo(412, 500)
-    ctx.stroke()
+    ctx.textBaseline = 'middle'
+    // Calculate line spacing - draw "Props" and "Theatre" on separate lines
+    const lineHeight = 100 // Space between lines
+    ctx.fillText('PROPS', 256, 384 - lineHeight / 2) // First line, above center
+    ctx.fillText('THEATRE', 256, 384 + lineHeight / 2) // Second line, below center
 
     // Convert canvas to image
     const img = new Image()
@@ -201,6 +198,12 @@ export default class Program {
   }
 
   async loadTextureAtlas() {
+    // Wait for fonts to load (especially Bungee) before creating menu pages
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready
+      console.log('[DEBUG] Fonts loaded, creating menu pages')
+    }
+
     const imagePaths = [
       "/pages/p1.jpg",
       "/pages/p2.jpg",

@@ -398,7 +398,7 @@ export default function WebGLProgram({ onPageClick, skipAnimation = false }: Web
           width: '100vw',
           height: '100vh',
           overflow: 'hidden',
-          zIndex: 1, // Above wrapper (z-index 0) but below curtains during loading
+          zIndex: 0, // Behind curtains (curtains at z-index 20) during reveal
           touchAction: 'none',
           opacity: 1, // Always visible - opacity controlled by canvasOpacity only affects interaction
           pointerEvents: canvasOpacity > 0 ? 'auto' : 'none',

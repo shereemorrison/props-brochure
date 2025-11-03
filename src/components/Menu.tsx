@@ -15,7 +15,7 @@ const menuItems = [
   { id: 'tuesday-25th', title: 'Tues', subtitle: '25th', route: '/day/tuesday-25th', year: 2025, background: '/theatre/theatre2.webp' },
   { id: 'wednesday-26th', title: 'Wed', subtitle: '26th', route: '/day/wednesday-26th', year: 2025, background: '/theatre/theatre3.webp' },
   { id: 'thursday-27th', title: 'Thurs', subtitle: '27th', route: '/day/thursday-27th', year: 2025, background: '/theatre/theatre4.webp' },
-  { id: 'credits', title: 'Gallery', subtitle: '', route: '/acknowledgements', year: 2025, background: '/theatre/theatre5.webp' },
+  { id: 'credits', title: 'Onwards to', subtitle: '2026', route: '/acknowledgements', background: '/theatre/theatre5.webp' },
   { id: 'contact', title: 'Contact', subtitle: '', route: '/contact', year: null, background: '/theatre/theatre6.webp' },
 ];
 
