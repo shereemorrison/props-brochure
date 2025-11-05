@@ -2,6 +2,7 @@ export interface Stage {
   id: string;
   stageNumber: string; // "Stage One", "Stage Two", "Stage Three"
   title: string;
+  writtenBy: string;
   summary: string;
   cast: Array<{ name: string; role: string }>;
   awards: Array<{ icon: string; name: string; recipient: string }>;
@@ -26,7 +27,8 @@ export const days: Day[] = [
         id: 'stage-one-monday',
         stageNumber: 'Stage One',
         title: 'FIVE MINUTES',
-        summary: 'Summary of FIVE MINUTES play will go here',
+        writtenBy: 'Olivia Jacobs and Alise Amarant',
+        summary: 'Brody lives in a thousand worlds complete with adventures, main characters and invisible friends. What is the cost of five minutes? Inspired by the worlds that the young at heart can make up and the power of being distracted within our everyday lives.',
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -41,7 +43,8 @@ export const days: Day[] = [
         id: 'stage-two-monday',
         stageNumber: 'Stage Two',
         title: 'THE BAD SIDE',
-        summary: 'Summary of THE BAD SIDE play will go here',
+        writtenBy: 'Alise Amarant',
+        summary: "At the annual meeting of the Bad Wolves Club, we're given a behind-the-scenes look into the secret world of wolves. Gathered from fables, TV shows, comics, and films, these famous \"bad wolves\" come together to challenge their notorious reputation and explore what it takes to be seen as good once again.",
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -57,7 +60,8 @@ export const days: Day[] = [
         id: 'stage-three-monday',
         stageNumber: 'Stage Three',
         title: 'FERRIER\'S SHOES',
-        summary: 'Summary of FERRIER\'S SHOES play will go here',
+        writtenBy: 'Alise Amarant, Olivia Jacobs and special guest Darcy Gibson',
+        summary: "In Ferrier's Shoes, we spend a day with Stanley in his family's old shoe shop — passed down through generations from his father's father's father. It's just Stanley now, serving everyone from teenagers to toddlers to grannies. But something strange is afoot: all the left shoes have mysteriously vanished. As the mystery deepens, it might take a detective — or something more — to uncover the real reason behind the missing shoes.",
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -78,7 +82,8 @@ export const days: Day[] = [
         id: 'stage-one-tuesday',
         stageNumber: 'Stage One',
         title: 'FIVE MINUTES',
-        summary: 'Summary of FIVE MINUTES play will go here',
+        writtenBy: 'Olivia Jacobs and Alise Amarant',
+        summary: 'Brody lives in a thousand worlds complete with adventures, main characters and invisible friends. What is the cost of five minutes? Inspired by the worlds that the young at heart can make up and the power of being distracted within our everyday lives.',
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -93,7 +98,8 @@ export const days: Day[] = [
         id: 'stage-two-tuesday',
         stageNumber: 'Stage Two',
         title: 'THE BAD SIDE',
-        summary: 'Summary of THE BAD SIDE play will go here',
+        writtenBy: 'Alise Amarant',
+        summary: "At the annual meeting of the Bad Wolves Club, we're given a behind-the-scenes look into the secret world of wolves. Gathered from fables, TV shows, comics, and films, these famous \"bad wolves\" come together to challenge their notorious reputation and explore what it takes to be seen as good once again.",
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -109,7 +115,8 @@ export const days: Day[] = [
         id: 'stage-three-tuesday',
         stageNumber: 'Stage Three',
         title: 'FERRIER\'S SHOES',
-        summary: 'Summary of FERRIER\'S SHOES play will go here',
+        writtenBy: 'Alise Amarant, Olivia Jacobs and special guest Darcy Gibson',
+        summary: "In Ferrier's Shoes, we spend a day with Stanley in his family's old shoe shop — passed down through generations from his father's father's father. It's just Stanley now, serving everyone from teenagers to toddlers to grannies. But something strange is afoot: all the left shoes have mysteriously vanished. As the mystery deepens, it might take a detective — or something more — to uncover the real reason behind the missing shoes.",
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -130,7 +137,8 @@ export const days: Day[] = [
         id: 'stage-one-wednesday',
         stageNumber: 'Stage One',
         title: 'FIVE MINUTES',
-        summary: 'Summary of FIVE MINUTES play will go here',
+        writtenBy: 'Olivia Jacobs and Alise Amarant',
+        summary: 'Brody lives in a thousand worlds complete with adventures, main characters and invisible friends. What is the cost of five minutes? Inspired by the worlds that the young at heart can make up and the power of being distracted within our everyday lives.',
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -145,7 +153,8 @@ export const days: Day[] = [
         id: 'stage-two-wednesday',
         stageNumber: 'Stage Two',
         title: 'THE BAD SIDE',
-        summary: 'Summary of THE BAD SIDE play will go here',
+        writtenBy: 'Alise Amarant',
+        summary: "At the annual meeting of the Bad Wolves Club, we're given a behind-the-scenes look into the secret world of wolves. Gathered from fables, TV shows, comics, and films, these famous \"bad wolves\" come together to challenge their notorious reputation and explore what it takes to be seen as good once again.",
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -161,7 +170,8 @@ export const days: Day[] = [
         id: 'stage-three-wednesday',
         stageNumber: 'Stage Three',
         title: 'FERRIER\'S SHOES',
-        summary: 'Summary of FERRIER\'S SHOES play will go here',
+        writtenBy: 'Alise Amarant, Olivia Jacobs and special guest Darcy Gibson',
+        summary: "In Ferrier's Shoes, we spend a day with Stanley in his family's old shoe shop — passed down through generations from his father's father's father. It's just Stanley now, serving everyone from teenagers to toddlers to grannies. But something strange is afoot: all the left shoes have mysteriously vanished. As the mystery deepens, it might take a detective — or something more — to uncover the real reason behind the missing shoes.",
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -183,7 +193,8 @@ export const days: Day[] = [
         id: 'stage-one-thursday',
         stageNumber: 'Stage One',
         title: 'FIVE MINUTES',
-        summary: 'Summary of FIVE MINUTES play will go here',
+        writtenBy: 'Olivia Jacobs and Alise Amarant',
+        summary: 'Brody lives in a thousand worlds complete with adventures, main characters and invisible friends. What is the cost of five minutes? Inspired by the worlds that the young at heart can make up and the power of being distracted within our everyday lives.',
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -198,7 +209,8 @@ export const days: Day[] = [
         id: 'stage-two-thursday-our-space',
         stageNumber: 'Stage Two',
         title: 'OUR SPACE',
-        summary: 'Summary of OUR SPACE play will go here',
+        writtenBy: 'Alise Amarant',
+        summary: "OUR SPACE takes us aboard the Titanic in 1912, in the midst of chaos as the crew faces the unimaginable. Amid the rising panic, they each search for their own sense of personal space — even as they're literally surrounded by it. A story about the strength of friendship, the boundaries of humor, and what happens when a joke goes too far.",
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -213,7 +225,8 @@ export const days: Day[] = [
         id: 'stage-two-thursday-bad-side',
         stageNumber: 'Stage Two',
         title: 'THE BAD SIDE',
-        summary: 'Summary of THE BAD SIDE play will go here',
+        writtenBy: 'Alise Amarant',
+        summary: "At the annual meeting of the Bad Wolves Club, we're given a behind-the-scenes look into the secret world of wolves. Gathered from fables, TV shows, comics, and films, these famous \"bad wolves\" come together to challenge their notorious reputation and explore what it takes to be seen as good once again.",
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
@@ -229,7 +242,8 @@ export const days: Day[] = [
         id: 'stage-two-thursday-pirated',
         stageNumber: 'Stage Two',
         title: 'PIRATED',
-        summary: 'Summary of PIRATED play will go here',
+        writtenBy: 'Alise Amarant, Olivia Jacobs and special guest Jacob Amarant',
+        summary: "What happens when a band of pirates finally discovers the land they've always dreamed of finding? And once their dream comes true—what comes next? Through the use of song lyrics and storytelling, this play explores the pirates' hopes, struggles, and the unexpected reality of achieving their long-sought dream when piracy is a crime.",
         cast: [
           { name: 'Example 1', role: 'Actor' },
           { name: 'Example 2', role: 'Actor' },
